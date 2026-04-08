@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    :root { 
+      --primary-color: #B71C1C;
+      --secondary-color: #d32f2f;
+      --print-color: #0275d8;
+      --light-gray: #f4f6f8; 
+      --dark-text: #333; 
+      --border-color: #dee2e6; 
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--light-gray); margin: 0; color: var(--dark-text); }
+    .logo { display: block; margin: 20px auto 15px; max-height: 70px; width: auto; }
+    .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+    h1, h2, h3 { color: var(--primary-color); }
+    h1 { text-align: center; margin-bottom: 20px; font-size: 2rem; }
+    h2 { border-left: 4px solid var(--secondary-color); padding-left: 15px; margin-top: 40px; }
+    
+    /* --- INICIO: ESTILOS MODIFICADOS PARA LAYOUT LATERAL --- */
+
+    .main-layout {
+      display: flex;
+      align-items: flex-start; /* Alinea las columnas en la parte superior */
+      gap: 25px; /* Espacio entre el menú y el contenido */
+      margin-top: 25px;
+    }
+
+    .tab-nav { 
+      display: flex;
+      flex-direction: column; /* Apila los botones verticalmente */
+      width: 240px;          /* Ancho de la barra de navegación */
+      flex-shrink: 0;        /* Evita que el menú se encoja si el contenido es muy grande */
+      border: 1px solid var(--border-color); /* Quita el borde inferior original y pone uno completo */
+      border-radius: 8px;
+      padding: 8px;
+      background-color: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .tab-button { 
+      padding: 15px 20px; 
+      cursor: pointer; 
+      border: none; 
+      background-color: transparent; 
+      font-size: 16px; 
+      color: #555;
+      border-radius: 6px; /* Bordes redondeados para cada botón */
+      margin-bottom: 4px; /* Espacio entre botones */
+      transition: background-color 0.2s, color 0.2s;
+      width: 100%;
+      text-align: left; /* Alinea el texto a la izquierda */
+      border-bottom: none !important; /* Sobrescribe el borde inferior original */
+    }
+     .tab-button:last-child {
+      margin-bottom: 0;
+    }
+    .tab-button:hover {
+      background-color: #e9ecef;
+    }
+    .tab-button.active { 
+      font-weight: 600; 
+      color: white; 
+      background-color: var(--primary-color);
+    }
+    
+    .tab-content-area {
+      flex-grow: 1; /* Hace que el área de contenido ocupe el espacio restante */
+      min-width: 0; /* Arreglo de Flexbox para evitar que el contenido se desborde */
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { 
+        display: block; 
+        animation: fadeIn 0.5s; 
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* --- FIN: ESTILOS MODIFICADOS --- */
+    
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .modal-overlay.visible { opacity: 1; visibility: visible; }
+    .modal-content { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); width: 90%; max-width: 600px; transform: scale(0.95); transition: transform 0.3s; position: relative; }
+    .modal-content h3 { margin-top: 0; font-size: 1.5rem; }
+    .modal-actions { margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px; }
+    .close-button { position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; cursor: pointer; color: #aaa; }
+    
+    .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.7); z-index: 2000; display: flex; justify-content: center; align-items: center; display: none; }
+    .spinner { border: 6px solid #f3f3f3; border-top: 6px solid var(--primary-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    input, select, textarea, button { font-family: inherit; font-size: 1rem; padding: 12px; margin-top: 5px; border: 1px solid var(--border-color); border-radius: 6px; width: 100%; box-sizing: border-box; }
+    button { background-color: var(--primary-color); color: white; border: none; cursor: pointer; transition: background-color 0.2s, box-shadow 0.2s; font-weight: 500; }
+    button:hover { background-color: #9A1616; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    button.secondary { background-color: #6c757d; }
+    button.secondary:hover { background-color: #5a6268; }
+      button.print-button {
+      background-color: var(--print-color);
+    }
+    button.print-button:hover {
+        background-color: #025aa5;
+    }
+    button:disabled { background-color: #ccc; cursor: not-allowed; }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; }
+    th, td { padding: 14px; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+    th { background-color: #f8f9fa; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+    .card { background: var(--light-gray); border: 1px solid var(--border-color); padding: 25px; border-radius: 8px; text-align: center; }
+    .card .value { font-size: 2.8rem; font-weight: 700; color: var(--primary-color); }
+    .card .label { font-size: 1.1rem; color: #6c757d; margin-top: 5px; }
+    
+    .details-grid { display: grid; grid-template-columns: auto 1fr; gap: 5px 20px; }
+    .details-grid strong { color: #555; }
+    
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .form-section { padding: 20px; border: 1px solid var(--border-color); border-radius: 8px; }
+    
+    .notification-area { margin-bottom: 20px; padding: 15px; border-radius: 8px; border: 1px solid; }
+    .notification-area.warning { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
+    .notification-area h3 { margin-top: 0; font-size: 1.2rem; }
+    .notification-area ul { padding-left: 20px; margin: 0; }
+  </style>
+</head>
+<body>
+
+  <div class="loader-overlay" id="loader"><div class="spinner"></div></div>
+
+  <div class="modal-overlay" id="modalRechazo">
+    <div class="modal-content">
+      <span class="close-button" onclick="ocultarModal('modalRechazo')">&times;</span>
+      <h3>Motivo del Rechazo</h3>
+      <p>Por favor, indica el motivo para rechazar la solicitud <strong id="modalRechazoId"></strong>.</p>
+      <textarea id="motivoRechazoInput" rows="3" placeholder="Ej: Falta de disponibilidad de vehículos..."></textarea>
+      <div class="modal-actions">
+        <button class="secondary" onclick="ocultarModal('modalRechazo')">Cancelar</button>
+        <button onclick="confirmarRechazo()">Confirmar Rechazo</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal-overlay" id="modalDetalles">
+    <div class="modal-content">
+      <span class="close-button" onclick="ocultarModal('modalDetalles')">&times;</span>
+      <h3 id="modalDetallesTitulo">Detalles de la Solicitud</h3>
+      <div id="modalDetallesContenido" class="details-grid"></div>
+      <div class="modal-actions">
+        <button onclick="ocultarModal('modalDetalles')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalMensaje">
+    <div class="modal-content">
+      <span class="close-button" onclick="ocultarModal('modalMensaje')">&times;</span>
+      <h3 id="modalMensajeTitulo"></h3>
+      <p id="modalMensajeTexto"></p>
+      <div class="modal-actions"><button onclick="ocultarModal('modalMensaje')">Cerrar</button></div>
+    </div>
+  </div>
+  
+  <div class="modal-overlay" id="modalVehiculo">
+    <div class="modal-content">
+        <span class="close-button" onclick="ocultarModal('modalVehiculo')">&times;</span>
+        <h3 id="modalVehiculoTitulo">Agregar Vehículo</h3>
+        <form id="formVehiculo" onsubmit="handleGuardarVehiculo(event)">
+            <input type="hidden" id="vehiculoId" name="id">
+            <div class="form-grid">
+              <input type="text" id="vehiculoPatente" name="patente" placeholder="Patente" required>
+              <input type="text" id="vehiculoMarca" name="marca" placeholder="Marca" required>
+              <input type="text" id="vehiculoModelo" name="modelo" placeholder="Modelo" required>
+              <input type="number" id="vehiculoAnio" name="anio" placeholder="Año" required>
+              <input type="number" id="vehiculoCapacidad" name="capacidad" placeholder="Capacidad" required>
+              <input type="text" id="vehiculoCombustible" name="combustible" placeholder="Combustible">
+              <input type="number" id="vehiculoVelocidad" name="velocidadMaxima" placeholder="Velocidad Máxima (km/h)">
+              <textarea id="vehiculoObservaciones" name="observaciones" placeholder="Observaciones" style="grid-column: 1 / -1;"></textarea>
+            </div>
+            <hr>
+            <div class="form-grid">
+              <label><strong>Fecha Vencimiento RTO:</strong>
+                <input type="date" id="vehiculoFechaVtoRto" name="fechaVtoRto" required>
+              </label>
+              <label><strong>Fecha Vencimiento Seguro:</strong>
+                <input type="date" id="vehiculoFechaVtoSeguro" name="fechaVtoSeguro" required>
+              </label>
+            </div>
+            <div class="modal-actions">
+                <button class="secondary" type="button" onclick="ocultarModal('modalVehiculo')">Cancelar</button>
+                <button type="submit" id="botonGuardarVehiculo">Guardar</button>
+            </div>
+        </form>
+        <div id="statusVehiculo"></div>
+    </div>
+  </div>
+
+  <div class="container">
+    <img src="https://drive.google.com/file/d/1wp0Og2dHgQOlfWkNfg7rtaHztt3Fsee3/view" alt="Logo Universidad" class="logo">
+    <h1>Panel del Encargado de Flota</h1>
+
+    <div id="notificacionesVencimientos" class="notification-area warning" style="display: none;">
+        <h3>⚠️ Alertas de Vencimiento</h3>
+        <ul id="listaNotificaciones"></ul>
+    </div>
+
+    <div class="main-layout">
+        
+        <nav class="tab-nav">
+          <button class="tab-button active" onclick="cambiarTab(event, 'tabDashboard')">Dashboard</button>
+          <button class="tab-button" onclick="cambiarTab(event, 'tabPendientes')">Pendientes</button>
+          <button class="tab-button" onclick="cambiarTab(event, 'tabActivas')">Activas</button>
+          <button class="tab-button" onclick="cambiarTab(event, 'tabHistorial')">Historial</button>
+          <button class="tab-button" onclick="cambiarTab(event, 'tabVehiculos')">Vehículos</button>
+          <button class="tab-button" onclick="cambiarTab(event, 'tabMantenimiento')">Mantenimiento</button>
+        </nav>
+
+        <div class="tab-content-area">
+          <div id="tabDashboard" class="tab-content active"><div class="dashboard" id="dashboard-container"></div></div>
+          
+          <div id="tabPendientes" class="tab-content">
+            <h2>Solicitudes Pendientes</h2>
+            <table id="tablaPendientes">
+              <thead><tr><th>ID</th><th>Usuario</th><th>Salida</th><th>Regreso</th><th>Acciones</th><th>Gestión</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div id="tabActivas" class="tab-content">
+              <h2>Solicitudes Activas (Aprobadas)</h2>
+              <table id="tablaActivas">
+                  <!-- <thead><tr><th>ID</th><th>Usuario</th><th>Salida</th><th>Regreso</th><th>Vehículo Asignado</th><th>Acciones</th></tr></thead> -->
+                  <thead><tr><th>ID</th><th>Usuario</th><th>Salida</th><th>Regreso</th><th>Vehículo Asignado</th><th>Gestionado por</th><th>Acciones</th></tr></thead>
+                  <tbody></tbody>
+              </table>
+          </div>
+          
+          <div id="tabHistorial" class="tab-content">
+              <h2>Historial (Finalizadas y Rechazadas)</h2>
+              <table id="tablaHistorial">
+                  <!-- <thead><tr><th>ID</th><th>Usuario</th><th>Estado</th><th>Vehículo</th><th>Observaciones</th><th>Acciones</th></tr></thead> -->
+                  <thead><tr><th>ID</th><th>Usuario</th><th>Estado</th><th>Gestionado por</th><th>Vehículo</th><th>Observaciones</th><th>Acciones</th></tr></thead>
+                  <tbody></tbody>
+              </table>
+          </div>
+          
+          <div id="tabVehiculos" class="tab-content">
+              <h2>Gestión de Vehículos</h2>
+              <button onclick="abrirModalParaAgregarVehiculo()" style="width: auto; padding: 12px 20px; margin-bottom: 20px;">Agregar Nuevo Vehículo</button>
+              <table id="tablaVehiculos">
+                  <thead>
+                      <tr>
+                          <th>ID</th><th>Patente</th><th>Marca/Modelo</th><th>Estado</th><th>VTO RTO</th><th>VTO Seguro</th><th>Acciones</th>
+                      </tr>
+                  </thead>
+                  <tbody></tbody>
+              </table>
+          </div>
+          
+          <div id="tabMantenimiento" class="tab-content">
+              <h2>Mantenimiento de Vehículos</h2>
+              <div class="form-section">
+                  <h3>Registrar Nuevo Mantenimiento</h3>
+                  <form id="formRegistrarMantenimiento" onsubmit="registrarNuevoMantenimiento(event)">
+                      <div class="form-grid">
+                          <select name="patente" required><option value="">-- Seleccionar Vehículo --</option></select>
+                          <input name="tipo" placeholder="Tipo (Ej: Cambio de aceite)" required>
+                          <input name="costo" type="number" step="0.01" placeholder="Costo" required>
+                          <input name="responsable" placeholder="Responsable (Ej: Taller Mecánico)" required>
+                          <label>Fecha de Inicio <input type="datetime-local" name="fechaInicio" required></label>
+                          <textarea name="detalle" placeholder="Detalle del mantenimiento..." style="grid-column: 1 / -1;"></textarea>
+                      </div>
+                      <button type="submit" style="margin-top: 15px; width: auto; padding: 12px 25px;">Registrar Mantenimiento</button>
+                  </form>
+              </div>
+              <h2 style="margin-top: 40px;">Mantenimientos en Curso</h2>
+              <table id="tablaMantenimientos">
+                  <thead><tr><th>ID</th><th>Patente</th><th>Tipo</th><th>Detalle</th><th>Inicio</th><th>Responsable</th><th>Acciones</th></tr></thead>
+                  <tbody></tbody>
+              </table>
+              
+              <h2 style="margin-top: 40px;">Historial de Mantenimientos</h2>
+              <table id="tablaMantenimientosHistorial">
+                  <thead><tr><th>ID</th><th>Patente</th><th>Tipo</th><th>Inicio</th><th>Fin</th><th>Responsable</th><th>Costo</th></tr></thead>
+                  <tbody></tbody>
+              </table>
+          </div>
+        </div> </div> </div> <script>
+    
+    let solicitudesCacheadas = [];
+    let vehiculosCacheados = [];
+    let scriptUrl = '';
+    let mantenimientosActivos = [];
+
+    // --- NAVEGACIÓN Y UTILIDADES UI ---
+    function cambiarTab(evt, tabName) {
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+      document.querySelectorAll('.tab-button').forEach(tb => tb.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
+      evt.currentTarget.classList.add('active');
+    }
+    function mostrarLoader() { document.getElementById('loader').style.display = 'flex'; }
+    function ocultarLoader() { document.getElementById('loader').style.display = 'none'; }
+    function mostrarModal(id) { document.getElementById(id).classList.add('visible'); }
+    function ocultarModal(id) { document.getElementById(id).classList.remove('visible'); }
+    function mostrarMensaje(titulo, texto) {
+        document.getElementById('modalMensajeTitulo').textContent = titulo;
+        document.getElementById('modalMensajeTexto').textContent = texto;
+        mostrarModal('modalMensaje');
+    }
+    function formatearFechaParaInput(fechaStr) {
+        if (!fechaStr || fechaStr === 'N/A') return '';
+        const partes = fechaStr.split(' ')[0].split('/');
+        if (partes.length === 3) {
+            return `${partes[2]}-${partes[1]}-${partes[0]}`;
+        }
+        return '';
+    }
+    
+    function obtenerFechaSinHora(fechaStr) {
+        if (typeof fechaStr === 'string' && fechaStr.includes(' ')) {
+            return fechaStr.split(' ')[0];
+        }
+        return fechaStr || 'N/A';
+    }
+
+    // --- LÓGICA DE PROMESAS ---
+    function run(funcName, ...args) {
+        return new Promise((resolve, reject) => {
+            const runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
+            switch (funcName) {
+                case 'getScriptUrl': runner.getScriptUrl(...args); break;
+                case 'obtenerEstadisticasDashboard': runner.obtenerEstadisticasDashboard(...args); break;
+                case 'listarSolicitudesPorEstados': runner.listarSolicitudesPorEstados(...args); break;
+                case 'listarVehiculos': runner.listarVehiculos(...args); break;
+                case 'listarMantenimientosActivos': runner.listarMantenimientosActivos(...args); break;
+                case 'listarMantenimientosFinalizados': runner.listarMantenimientosFinalizados(...args); break;
+                case 'obtenerNotificacionesVencimientos': runner.obtenerNotificacionesVencimientos(...args); break;
+                case 'aprobarSolicitud': runner.aprobarSolicitud(...args); break;
+                case 'finalizarSolicitud': runner.finalizarSolicitud(...args); break;
+                case 'finalizarMantenimiento': runner.finalizarMantenimiento(...args); break;
+                case 'rechazarSolicitud': runner.rechazarSolicitud(...args); break;
+                case 'editarVehiculo': runner.editarVehiculo(...args); break;
+                case 'agregarVehiculo': runner.agregarVehiculo(...args); break;
+                case 'registrarMantenimiento': runner.registrarMantenimiento(...args); break;
+                case 'actualizarEstadoVehiculo': runner.actualizarEstadoVehiculo(...args); break;
+                default: reject(new Error("Función desconocida: " + funcName));
+            }
+        });
+    }
+
+    // --- CARGA DE DATOS PRINCIPAL (VERSIÓN CORREGIDA) ---
+/*     async function cargarTodasLasTablas() {
+        mostrarLoader();
+        try {
+            const [url, stats, pendientes, activas, historial, vehiculos, mantenimientos, historialMantenimientos, notificaciones] = await Promise.all([
+                run('getScriptUrl'),
+                run('obtenerEstadisticasDashboard'), 
+                run('listarSolicitudesPorEstados', ['Pendiente']),
+                run('listarSolicitudesPorEstados', ['Aprobada']), 
+                run('listarSolicitudesPorEstados', ['Finalizada', 'Rechazada']),
+                run('listarVehiculos'), 
+                run('listarMantenimientosActivos'), 
+                run('listarMantenimientosFinalizados'),
+                run('obtenerNotificacionesVencimientos')
+            ]);
+            
+            // --- CORRECCIÓN: Se añaden valores por defecto para evitar errores si una función devuelve null ---
+            const safeVehiculos = vehiculos || [];
+            const safePendientes = pendientes || [];
+            const safeActivas = activas || [];
+            const safeHistorial = historial || [];
+            const safeMantenimientos = mantenimientos || [];
+            const safeHistorialMantenimientos = historialMantenimientos || [];
+            const safeNotificaciones = notificaciones || [];
+            const safeStats = stats || { vehiculosDisponibles: 0, vehiculosAsignados: 0, vehiculosMantenimiento: 0, solicitudesPendientes: 0 };
+            
+            scriptUrl = url;
+            solicitudesCacheadas = [...safePendientes, ...safeActivas, ...safeHistorial];
+            vehiculosCacheados = safeVehiculos;
+
+            // Renderizar todo con las variables seguras
+            renderDashboard(safeStats);
+            renderNotificaciones(safeNotificaciones);
+            renderTablaPendientes(safePendientes, safeVehiculos);
+            renderTablaActivas(safeActivas);
+            renderTablaHistorial(safeHistorial);
+            renderTablaVehiculos(safeVehiculos);
+            renderTablaMantenimiento(safeMantenimientos, safeHistorialMantenimientos, safeVehiculos);
+
+        } catch (err) {
+            mostrarMensaje('Error Crítico', 'No se pudieron cargar los datos: ' + err.message);
+        } finally {
+            ocultarLoader();
+        }
+    } */
+
+      async function cargarMantenimientosActivos() {
+    try {
+        mantenimientosActivos = await run('obtenerMantenimientosActivosConFechas');
+    } catch (error) {
+        console.error('Error cargando mantenimientos activos:', error);
+        mantenimientosActivos = [];
+    }
+}
+
+    //     async function cargarTodasLasTablas(isAutoRefresh = false) {
+    //     // Solo muestra el loader en la carga inicial, no en las recargas automáticas
+    //     if (!isAutoRefresh) {
+    //         mostrarLoader();
+    //     }
+       
+    //     try {
+    //         const [url, stats, pendientes, activas, historial, vehiculos, mantenimientos, historialMantenimientos, notificaciones] = await Promise.all([
+    //             run('getScriptUrl'),
+    //             run('obtenerEstadisticasDashboard'), 
+    //             run('listarSolicitudesPorEstados', ['Pendiente']),
+    //             run('listarSolicitudesPorEstados', ['Aprobada']), 
+    //             run('listarSolicitudesPorEstados', ['Finalizada', 'Rechazada']),
+    //             run('listarVehiculos'), 
+    //             run('listarMantenimientosActivos'), 
+    //             run('listarMantenimientosFinalizados'),
+    //             run('obtenerNotificacionesVencimientos')
+    //         ]);
+            
+    //         const safeVehiculos = vehiculos || [];
+    //         const safePendientes = pendientes || [];
+    //         const safeActivas = activas || [];
+    //         const safeHistorial = historial || [];
+    //         const safeMantenimientos = mantenimientos || [];
+    //         const safeHistorialMantenimientos = historialMantenimientos || [];
+    //         const safeNotificaciones = notificaciones || [];
+    //         const safeStats = stats || { vehiculosDisponibles: 0, vehiculosAsignados: 0, vehiculosMantenimiento: 0, solicitudesPendientes: 0 };
+            
+    //         scriptUrl = url;
+    //         solicitudesCacheadas = [...safePendientes, ...safeActivas, ...safeHistorial];
+    //         vehiculosCacheados = safeVehiculos;
+
+    //         renderDashboard(safeStats);
+    //         renderNotificaciones(safeNotificaciones);
+    //         renderTablaPendientes(safePendientes, safeVehiculos);
+    //         renderTablaActivas(safeActivas);
+    //         renderTablaHistorial(safeHistorial);
+    //         renderTablaVehiculos(safeVehiculos);
+    //         renderTablaMantenimiento(safeMantenimientos, safeHistorialMantenimientos, safeVehiculos);
+
+    //     } catch (err) {
+    //         console.error("Error durante la actualización de datos: ", err);
+    //         // Opcional: mostrar un mensaje no invasivo en lugar del modal
+    //         // Por ejemplo, un pequeño banner en una esquina.
+    //         // mostrarMensaje('Error de Actualización', 'No se pudieron actualizar los datos: ' + err.message);
+    //     } finally {
+    //         // Siempre oculta el loader, por si acaso.
+    //         ocultarLoader();
+    //     }
+    // }
+
+
+
+    async function cargarTodasLasTablas(isAutoRefresh = false) {
+    if (!isAutoRefresh) {
+        mostrarLoader();
+    }
+   
+    try {
+        const [url, stats, pendientes, activas, historial, vehiculos, mantenimientos, historialMantenimientos, notificaciones] = await Promise.all([
+            run('getScriptUrl'),
+            run('obtenerEstadisticasDashboard'), 
+            run('listarSolicitudesPorEstados', ['Pendiente']),
+            run('listarSolicitudesPorEstados', ['Aprobada']), 
+            run('listarSolicitudesPorEstados', ['Finalizada', 'Rechazada']),
+            run('listarVehiculos'), 
+            run('listarMantenimientosActivos'), 
+            run('listarMantenimientosFinalizados'),
+            run('obtenerNotificacionesVencimientos')
+        ]);
+        
+        // Cargar también los mantenimientos activos para verificación frontend
+        await cargarMantenimientosActivos();
+        
+        const safeVehiculos = vehiculos || [];
+        const safePendientes = pendientes || [];
+        const safeActivas = activas || [];
+        const safeHistorial = historial || [];
+        const safeMantenimientos = mantenimientos || [];
+        const safeHistorialMantenimientos = historialMantenimientos || [];
+        const safeNotificaciones = notificaciones || [];
+        const safeStats = stats || { vehiculosDisponibles: 0, vehiculosAsignados: 0, vehiculosMantenimiento: 0, solicitudesPendientes: 0 };
+        
+        scriptUrl = url;
+        solicitudesCacheadas = [...safePendientes, ...safeActivas, ...safeHistorial];
+        vehiculosCacheados = safeVehiculos;
+
+        renderDashboard(safeStats);
+        renderNotificaciones(safeNotificaciones);
+        renderTablaPendientes(safePendientes, safeVehiculos);
+        renderTablaActivas(safeActivas);
+        renderTablaHistorial(safeHistorial);
+        renderTablaVehiculos(safeVehiculos);
+        renderTablaMantenimiento(safeMantenimientos, safeHistorialMantenimientos, safeVehiculos);
+
+    } catch (err) {
+        console.error("Error durante la actualización de datos: ", err);
+    } finally {
+        ocultarLoader();
+    }
+}
+
+
+    // --- FUNCIONES DE RENDERIZADO ---
+    function renderDashboard(stats) {
+      document.getElementById('dashboard-container').innerHTML = `<div class="card"><div class="value">${stats.solicitudesPendientes}</div><div class="label">Solicitudes Pendientes</div></div><div class="card"><div class="value">${stats.vehiculosDisponibles}</div><div class="label">Vehiculos Disponibles</div></div><div class="card"><div class="value">${stats.vehiculosAsignados}</div><div class="label">Vehiculos Asignados</div></div><div class="card"><div class="value">${stats.vehiculosMantenimiento}</div><div class="label">En Mantenimiento</div></div>`;
+    }
+
+    function renderNotificaciones(notificaciones) {
+        const area = document.getElementById('notificacionesVencimientos');
+        const lista = document.getElementById('listaNotificaciones');
+        lista.innerHTML = '';
+        if (notificaciones && notificaciones.length > 0) {
+            notificaciones.forEach(n => {
+                lista.innerHTML += `<li><strong>${n.patente}:</strong> ${n.tipo} vence en <strong>${n.diasRestantes} días</strong> (${obtenerFechaSinHora(n.fechaVencimiento)}).</li>`;
+            });
+            area.style.display = 'block';
+        } else {
+            area.style.display = 'none';
+        }
+    }
+
+ /*    function renderTablaPendientes(pendientes, vehiculos) {
+        const vehiculosDisponibles = vehiculos.filter(v => (v.estado || '').toLowerCase() === 'disponible');
+        document.querySelector('#tablaPendientes tbody').innerHTML = pendientes.map(s => `<tr><td>${s.id}</td><td>${s.emailUsuario}</td><td>${s.salida}</td><td>${s.regreso}</td><td style="display:flex; gap: 5px;"><button onclick="verDetalles(${s.id})">Detalles</button><button class="print-button" onclick="imprimirComprobante(${s.id})">Imprimir</button></td><td style="display: flex; gap: 5px;"><select id="vehiculo_${s.id}" style="flex-grow: 1;"><option value="">Vehículo...</option>${vehiculosDisponibles.map(v => `<option value="${v.patente}">${v.modelo} - ${v.patente}</option>`).join('')}</select><button onclick="aprobar(${s.id}, '${s.salida}', '${s.regreso}')">✔️</button><button class="secondary" onclick="mostrarModalRechazo(${s.id})">❌</button></td></tr>`).join('') || `<tr><td colspan="6" align="center">No hay solicitudes pendientes.</td></tr>`;
+    } */
+
+    // ESTA ERA LA QUE ESTABA ACTIVA
+    //  function renderTablaPendientes(pendientes, vehiculos) {
+    //     const vehiculosDisponibles = vehiculos.filter(v => (v.estado || '').toLowerCase() === 'disponible');
+        
+    //     // Se modifica la cabecera de la tabla dinámicamente para quitar "Gestión"
+    //     const cabecera = document.querySelector('#tablaPendientes thead tr');
+    //     cabecera.innerHTML = '<th>ID</th><th>Usuario</th><th>Salida</th><th>Regreso</th><th>Acciones</th>';
+
+    //     const tbody = document.querySelector('#tablaPendientes tbody');
+        
+    //     if (pendientes.length > 0) {
+    //         tbody.innerHTML = pendientes.map(s => {
+    //             const opcionesVehiculos = vehiculosDisponibles.map(v => `<option value="${v.patente}">${v.marca} ${v.modelo} - ${v.patente}</option>`).join('');
+
+    //             return `<tr>
+    //                 <td>${s.id}</td>
+    //                 <td>${s.emailUsuario}</td>
+    //                 <td>${s.salida}</td>
+    //                 <td>${s.regreso}</td>
+    //                 <td style="min-width: 400px;">
+    //                     <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 5px;">
+    //                         <button onclick="verDetalles(${s.id})" style="flex-grow: 1;">Detalles</button>
+    //                         <button class="print-button" onclick="imprimirComprobante(${s.id})" style="flex-grow: 1;">Imprimir</button>
+    //                     </div>
+    //                     <div style="display: flex; gap: 8px; align-items: center;">
+    //                         <select id="vehiculo_${s.id}" style="flex-grow: 4; min-width: 180px;">
+    //                             <option value="">-- Asignar Vehículo --</option>
+    //                             ${opcionesVehiculos}
+    //                         </select>
+    //                         <button onclick="aprobar(${s.id}, '${s.salida}', '${s.regreso}')" style="flex-grow: 0; min-width: 40px; padding-left: 10px; padding-right: 10px;">✔️</button>
+    //                         <button class="secondary" onclick="mostrarModalRechazo(${s.id})" style="flex-grow: 0; min-width: 40px; padding-left: 10px; padding-right: 10px;">❌</button>
+    //                     </div>
+    //                 </td>
+    //             </tr>`;
+    //         }).join('');
+    //     } else {
+    //         // Se ajusta el colspan a 5 columnas
+    //         tbody.innerHTML = `<tr><td colspan="5" align="center">No hay solicitudes pendientes.</td></tr>`;
+    //     }
+    // }
+
+
+  function renderTablaPendientes(pendientes, vehiculos) {
+    const vehiculosDisponibles = vehiculos.filter(v => (v.estado || '').toLowerCase() === 'disponible');
+    
+    const cabecera = document.querySelector('#tablaPendientes thead tr');
+    cabecera.innerHTML = '<th>ID</th><th>Usuario</th><th>Salida</th><th>Regreso</th><th>Acciones</th>';
+
+    const tbody = document.querySelector('#tablaPendientes tbody');
+    
+    if (pendientes.length > 0) {
+        tbody.innerHTML = pendientes.map(s => {
+            const opcionesVehiculos = vehiculosDisponibles.map(v => {
+                // Verificar si este vehículo tiene mantenimientos en conflicto
+                const tieneConflicto = verificarConflictoMantenimiento(v.patente, s.salida, s.regreso);
+                const estiloOpcion = tieneConflicto ? 'style="background-color: #ffebee; color: #c62828;"' : '';
+                const textoAdvertencia = tieneConflicto ? ' ⚠️ MANTENIMIENTO' : '';
+                
+                return `<option value="${v.patente}" ${estiloOpcion}>${v.marca} ${v.modelo} - ${v.patente}${textoAdvertencia}</option>`;
+            }).join('');
+
+            return `<tr>
+                <td>${s.id}</td>
+                <td>${s.emailUsuario}</td>
+                <td>${s.salida}</td>
+                <td>${s.regreso}</td>
+                <td style="min-width: 400px;">
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 5px;">
+                        <button onclick="verDetalles(${s.id})" style="flex-grow: 1;">Detalles</button>
+                        <button class="print-button" onclick="imprimirComprobante(${s.id})" style="flex-grow: 1;">Imprimir</button>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <select id="vehiculo_${s.id}" onchange="verificarSeleccionVehiculo(this, '${s.salida}', '${s.regreso}')" style="flex-grow: 4; min-width: 180px;">
+                            <option value="">-- Asignar Vehículo --</option>
+                            ${opcionesVehiculos}
+                        </select>
+                        <button id="btnAprobar_${s.id}" onclick="aprobar(${s.id}, '${s.salida}', '${s.regreso}')" style="flex-grow: 0; min-width: 40px; padding-left: 10px; padding-right: 10px;">✔️</button>
+                        <button class="secondary" onclick="mostrarModalRechazo(${s.id})" style="flex-grow: 0; min-width: 40px; padding-left: 10px; padding-right: 10px;">❌</button>
+                    </div>
+                    <div id="alerta_${s.id}" style="display: none; margin-top: 5px; padding: 5px; background: #ffcdd2; border: 1px solid #f44336; border-radius: 4px; font-size: 12px; color: #c62828;"></div>
+                </td>
+            </tr>`;
+        }).join('');
+    } else {
+        tbody.innerHTML = `<tr><td colspan="5" align="center">No hay solicitudes pendientes.</td></tr>`;
+    }
+}
+function verificarConflictoMantenimiento(patente, fechaSalida, fechaRegreso) {
+    const salidaSolicitud = new Date(fechaSalida.split(' ')[0].split('/').reverse().join('-'));
+    const regresoSolicitud = new Date(fechaRegreso.split(' ')[0].split('/').reverse().join('-'));
+    
+    for (const mant of mantenimientosActivos) {
+        if (mant.patente.toUpperCase() === patente.toUpperCase()) {
+            const inicioMant = new Date(mant.fechaInicio);
+            // Búfer de 2 días antes del mantenimiento
+            const fechaLimite = new Date(inicioMant.getTime() - (2 * 24 * 60 * 60 * 1000));
+            
+            // Si el regreso es después de la fecha límite, hay conflicto
+            if (regresoSolicitud >= fechaLimite) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+async function verificarSeleccionVehiculo(selectElement, fechaSalida, fechaRegreso) {
+    const patente = selectElement.value;
+    const solicitudId = selectElement.id.replace('vehiculo_', '');
+    const alertaDiv = document.getElementById(`alerta_${solicitudId}`);
+    const btnAprobar = document.getElementById(`btnAprobar_${solicitudId}`);
+    
+    // Resetear estado visual
+    alertaDiv.style.display = 'none';
+    btnAprobar.disabled = false;
+    btnAprobar.style.opacity = '1';
+    
+    if (!patente) return;
+    
+    // Verificación local rápida
+    const tieneConflictoLocal = verificarConflictoMantenimiento(patente, fechaSalida, fechaRegreso);
+    
+    if (tieneConflictoLocal) {
+        // Buscar detalles del mantenimiento
+        const mantenimiento = mantenimientosActivos.find(m => m.patente.toUpperCase() === patente.toUpperCase());
+        
+        alertaDiv.innerHTML = `<strong>⚠️ CONFLICTO DE MANTENIMIENTO</strong><br>Este vehículo tiene mantenimiento programado para el ${mantenimiento.fechaInicioFormateada}. Selecciona otro vehículo.`;
+        alertaDiv.style.display = 'block';
+        btnAprobar.disabled = true;
+        btnAprobar.style.opacity = '0.5';
+        
+        // También verificar con el servidor para tener la información más precisa
+        try {
+            const verificacion = await run('verificarDisponibilidadEspecifica', patente, fechaSalida, fechaRegreso);
+            if (!verificacion.disponible) {
+                alertaDiv.innerHTML = `<strong>⚠️ VEHÍCULO NO DISPONIBLE</strong><br>${verificacion.mensaje}`;
+            }
+        } catch (error) {
+            console.error('Error verificando disponibilidad:', error);
+        }
+    }
+}
+
+
+
+
+    function renderTablaActivas(activas) {
+
+      document.querySelector('#tablaActivas tbody').innerHTML = activas.map(s => `<tr><td>${s.id}</td><td>${s.emailUsuario}</td><td>${s.salida}</td><td>${s.regreso}</td><td>${s.vehiculoAsignado}</td> <td>${s.gestionadoPor || 'N/A'}</td><td style="display:flex; gap: 5px;"><button onclick="finalizar(${s.id})">Finalizar</button><button class="print-button" onclick="imprimirComprobante(${s.id})">Imprimir</button></td></tr>`).join('') || `<tr><td colspan="6" align="center">No hay solicitudes activas.</td></tr>`;
+
+    }
+
+    function renderTablaHistorial(historial) {
+/*       document.querySelector('#tablaHistorial tbody').innerHTML = historial.map(s => `<tr><td>${s.id}</td><td>${s.emailUsuario}</td><td>${s.estado}</td><td>${s.vehiculoAsignado || 'N/A'}</td><td>${s.observaciones}</td><td><button class="print-button" onclick="imprimirComprobante(${s.id})">Imprimir</button></td></tr>`).join('') || `<tr><td colspan="6" align="center">No hay historial de solicitudes.</td></tr>`; */
+    document.querySelector('#tablaHistorial tbody').innerHTML = historial.map(s => `<tr><td>${s.id}</td><td>${s.emailUsuario}</td><td>${s.estado}</td><td>${s.gestionadoPor || 'N/A'}</td><td>${s.vehiculoAsignado || 'N/A'}</td><td>${s.observaciones}</td><td><button class="print-button" onclick="imprimirComprobante(${s.id})">Imprimir</button></td></tr>`).join('') || `<tr><td colspan="7" align="center">No hay historial de solicitudes.</td></tr>`;
+    }
+    
+    function renderTablaVehiculos(vehiculos) {
+      document.querySelector('#tablaVehiculos tbody').innerHTML = vehiculos.map(v => {
+          let estadoHtml;
+          const estadoActual = (v.estado || '').toLowerCase();
+          if (estadoActual === 'asignado' || estadoActual === 'mantenimiento') {
+              estadoHtml = `<span style="font-weight: bold;">${v.estado}</span>`;
+          } else {
+              const opciones = ['Disponible', 'No disponible', 'Fuera de servicio'];
+              const opcionesHtml = opciones.map(opt => `<option value="${opt.toLowerCase()}" ${opt.toLowerCase() === estadoActual ? 'selected' : ''}>${opt}</option>`).join('');
+              estadoHtml = `<select onchange="cambiarEstadoVehiculo(this, '${v.patente}')">${opcionesHtml}</select>`;
+          }
+          return `<tr>
+                  <td>${v.id}</td>
+                  <td>${v.patente}</td>
+                  <td>${v.marca} ${v.modelo}</td>
+                  <td>${estadoHtml}</td>
+                  <td>${v.fechaVtoRto}</td>
+                  <td>${v.fechaVtoSeguro}</td>
+                  <td><button onclick='abrirParaEditar(${JSON.stringify(v)})'>Editar</button></td>
+                </tr>`
+      }).join('') || `<tr><td colspan="7" align="center">No hay vehículos registrados.</td></tr>`;
+    }
+    
+    function renderTablaMantenimiento(mantenimientos, historialMantenimientos, vehiculos) {
+        const selectMantenimiento = document.querySelector('#formRegistrarMantenimiento select[name="patente"]');
+        selectMantenimiento.innerHTML = '<option value="">-- Seleccionar Vehículo --</option>' + vehiculos.map(v => `<option value="${v.patente}">${v.patente} - ${v.marca} ${v.modelo}</option>`).join('');
+        document.querySelector('#tablaMantenimientos tbody').innerHTML = mantenimientos.map(m => `<tr><td>${m.id}</td><td>${m.patente}</td><td>${m.tipo}</td><td>${m.detalle}</td><td>${m.fechaInicio}</td><td>${m.responsable}</td><td><button onclick="finalizarMant(${m.id})">Finalizar</button></td></tr>`).join('') || `<tr><td colspan="7" align="center">No hay mantenimientos en curso.</td></tr>`;
+        document.querySelector('#tablaMantenimientosHistorial tbody').innerHTML = historialMantenimientos.map(m => `<tr><td>${m.id}</td><td>${m.patente}</td><td>${m.tipo}</td><td>${m.fechaInicio}</td><td>${m.fechaFin}</td><td>${m.responsable}</td><td>${m.costo}</td></tr>`).join('') || `<tr><td colspan="7" align="center">No hay mantenimientos finalizados.</td></tr>`;
+    }
+
+    // --- ACCIONES Y MANEJO DE EVENTOS ---
+    
+    function verDetalles(solicitudId) {
+        const solicitud = solicitudesCacheadas.find(s => s.id == solicitudId);
+        if (!solicitud) return;
+        const contenido = `<strong>ID:</strong><span>${solicitud.id}</span><strong>Usuario:</strong><span>${solicitud.emailUsuario}</span><strong>Salida:</strong><span>${solicitud.salida}</span><strong>Regreso:</strong><span>${solicitud.regreso}</span><strong>Itinerario:</strong><span>${solicitud.itinerario}</span><strong>Tareas:</strong><span>${solicitud.tareas}</span><strong>Participantes:</strong><span>${solicitud.participantes}</span><strong>Conductores:</strong><span>${solicitud.conductores}</span>`;
+        document.getElementById('modalDetallesContenido').innerHTML = contenido;
+        mostrarModal('modalDetalles');
+    }
+
+
+
+async function aprobar(id, salida, regreso) {
+    // Reemplaza 'confirm' con un modal de confirmación personalizado.
+    // Ej: const confirmacion = await mostrarConfirmacion('...');
+    // Se utiliza 'confirm' por simplicidad, pero no debe usarse en entornos de producción.
+    if (!confirm('¿Confirmas la aprobación de esta solicitud?')) {
+        return;
+    }
+    
+    // Obtener el vehículo seleccionado.
+    const selectVehiculo = document.getElementById(`vehiculo_${id}`);
+    const patente = selectVehiculo.value;
+
+    if (!patente) {
+        mostrarMensaje('Atención', 'Debes seleccionar un vehículo antes de aprobar la solicitud.');
+        return;
+    }
+
+    mostrarLoader();
+    try {
+        const response = await run('aprobarSolicitud', id, patente, salida, regreso);
+        mostrarMensaje('Éxito', response.message);
+        await cargarTodasLasTablas();
+    } catch (err) {
+        let mensajeError = err.message;
+
+        if (mensajeError.includes('mantenimiento') || mensajeError.includes('conflicto') || mensajeError.includes('Mantenimiento')) {
+            mensajeError = `❌ Conflicto de Mantenimiento\n\n${mensajeError}\n\nSugerencias:\n• Selecciona otro vehículo disponible\n• Modifica las fechas de la solicitud\n• Verifica el cronograma de mantenimientos`;
+        } else if (mensajeError.includes('Conflicto de fechas')) {
+            mensajeError = `❌ Conflicto de Asignación\n\n${mensajeError}\n\nEste vehículo ya está asignado a otra solicitud en ese período.`;
+        }
+
+        mostrarMensaje('Error al Aprobar Solicitud', mensajeError);
+    } finally {
+        ocultarLoader();
+    }
+}
+
+// Función auxiliar para mostrar información de disponibilidad (opcional)
+async function verificarDisponibilidadVehiculo(patente, fechaSalida, fechaRegreso) {
+  try {
+    const response = await run('verificarDisponibilidadVehiculo', patente, fechaSalida, fechaRegreso);
+    return { disponible: true, mensaje: 'Vehículo disponible' };
+  } catch (err) {
+    return { disponible: false, mensaje: err.message };
+  }
+}
+
+
+    async function finalizar(id) {
+        if (!confirm('¿Seguro que deseas marcar esta solicitud como finalizada? El vehículo volverá a estar disponible.')) return;
+        mostrarLoader();
+        try {
+            const response = await run('finalizarSolicitud', id);
+            mostrarMensaje('Éxito', response.message);
+            cargarTodasLasTablas();
+        } catch (err) { mostrarMensaje('Error', err.message); }
+        finally { ocultarLoader(); }
+    }
+    
+    async function finalizarMant(id) {
+        if (!confirm('¿Seguro que deseas marcar este mantenimiento como finalizado? El vehículo pasará a estar disponible.')) return;
+        mostrarLoader();
+        try {
+            const response = await run('finalizarMantenimiento', id);
+            mostrarMensaje('Éxito', response.message);
+            cargarTodasLasTablas();
+        } catch (err) {
+            mostrarMensaje('Error', 'No se pudo finalizar el mantenimiento: ' + err.message);
+        } finally {
+            ocultarLoader();
+        }
+    }
+
+    function mostrarModalRechazo(id) {
+        document.getElementById('modalRechazoId').textContent = `#${id}`;
+        document.getElementById('modalRechazo').dataset.id = id;
+        document.getElementById('motivoRechazoInput').value = '';
+        mostrarModal('modalRechazo');
+    }
+
+    async function confirmarRechazo() {
+        const id = document.getElementById('modalRechazo').dataset.id;
+        const motivo = document.getElementById('motivoRechazoInput').value;
+        if (!motivo.trim()) return alert('El motivo es obligatorio.');
+        ocultarModal('modalRechazo');
+        mostrarLoader();
+        try {
+            const response = await run('rechazarSolicitud', id, motivo);
+            mostrarMensaje('Éxito', response.message);
+            cargarTodasLasTablas();
+        } catch (err) { mostrarMensaje('Error', err.message); }
+        finally { ocultarLoader(); }
+    }
+    
+    function imprimirComprobante(id) {
+        if (scriptUrl) {
+            const printUrl = `${scriptUrl}?page=imprimir&id=${id}`;
+            window.open(printUrl, '_blank');
+        } else {
+            mostrarMensaje('Error', 'La URL de la aplicación no se pudo obtener. Por favor, recargue la página.');
+        }
+    }
+
+    // --- LÓGICA DE VEHÍCULOS ---
+    function abrirModalParaAgregarVehiculo() {
+        document.getElementById('formVehiculo').reset();
+        document.getElementById('vehiculoId').value = ''; 
+        document.getElementById('modalVehiculoTitulo').textContent = 'Agregar Nuevo Vehículo';
+        document.getElementById('statusVehiculo').textContent = '';
+        mostrarModal('modalVehiculo');
+    }
+
+    function abrirParaEditar(vehiculo) {
+        document.getElementById('formVehiculo').reset();
+        document.getElementById('modalVehiculoTitulo').textContent = 'Editar Vehículo';
+        
+        document.getElementById('vehiculoId').value = vehiculo.id;
+        document.getElementById('vehiculoPatente').value = vehiculo.patente;
+        document.getElementById('vehiculoMarca').value = vehiculo.marca;
+        document.getElementById('vehiculoModelo').value = vehiculo.modelo;
+        document.getElementById('vehiculoAnio').value = vehiculo.anio;
+        document.getElementById('vehiculoCapacidad').value = vehiculo.capacidad;
+        document.getElementById('vehiculoCombustible').value = vehiculo.combustible;
+        document.getElementById('vehiculoVelocidad').value = vehiculo.velocidadMaxima;
+        document.getElementById('vehiculoObservaciones').value = vehiculo.observaciones;
+        
+        document.getElementById('vehiculoFechaVtoRto').value = formatearFechaParaInput(vehiculo.fechaVtoRto);
+        document.getElementById('vehiculoFechaVtoSeguro').value = formatearFechaParaInput(vehiculo.fechaVtoSeguro);
+
+        document.getElementById('statusVehiculo').textContent = '';
+        mostrarModal('modalVehiculo');
+    }
+
+    async function handleGuardarVehiculo(event) {
+        event.preventDefault();
+        const form = event.target;
+        const boton = document.getElementById('botonGuardarVehiculo');
+        boton.disabled = true;
+        
+        const vehiculoData = Object.fromEntries(new FormData(form).entries());
+        const funcionApi = vehiculoData.id ? 'editarVehiculo' : 'agregarVehiculo';
+        if (vehiculoData.fechaVtoRto) {
+            const fechaLocal = new Date(vehiculoData.fechaVtoRto + 'T00:00:00');
+            vehiculoData.fechaVtoRto = fechaLocal.toISOString();
+        }
+        if (vehiculoData.fechaVtoSeguro) {
+            const fechaLocal = new Date(vehiculoData.fechaVtoSeguro + 'T00:00:00');
+            vehiculoData.fechaVtoSeguro = fechaLocal.toISOString();
+        }
+        mostrarLoader();
+        ocultarModal('modalVehiculo');
+        
+        try {
+          const response = await run(funcionApi, vehiculoData);
+          mostrarMensaje('Éxito', response.message);
+          cargarTodasLasTablas();
+        } catch(err) {
+          mostrarMensaje('Error', err.message);
+        } finally {
+          boton.disabled = false;
+          ocultarLoader();
+        }
+    }
+
+    async function cambiarEstadoVehiculo(selectElement, patente) {
+        const nuevoEstado = selectElement.value;
+        const confirmacion = confirm(`¿Seguro que deseas cambiar el estado del vehículo ${patente} a "${nuevoEstado}"?`);
+        
+        if (!confirmacion) {
+            cargarTodasLasTablas(); // Revierte la selección visual si el usuario cancela
+            return;
+        }
+
+        mostrarLoader();
+        try {
+            const response = await run('actualizarEstadoVehiculo', patente, nuevoEstado);
+            mostrarMensaje('Éxito', response.message);
+            cargarTodasLasTablas(); 
+        } catch(err) {
+            mostrarMensaje('Error', 'No se pudo actualizar el estado: ' + err.message);
+            cargarTodasLasTablas(); 
+        } finally {
+            ocultarLoader();
+        }
+    }
+    
+    // --- LÓGICA DE MANTENIMIENTO ---
+    async function registrarNuevoMantenimiento(event) {
+        event.preventDefault();
+        const form = document.getElementById('formRegistrarMantenimiento');
+        const data = Object.fromEntries(new FormData(form).entries());
+        mostrarLoader();
+        try {
+            const response = await run('registrarMantenimiento', data);
+            mostrarMensaje('Éxito', response.message);
+            form.reset();
+            cargarTodasLasTablas();
+        } catch(err) { mostrarMensaje('Error', err.message); }
+        finally { ocultarLoader(); }
+    }
+
+    /* window.addEventListener('load', cargarTodasLasTablas); */
+       // Carga los datos cuando la página se abre por primera vez
+    window.addEventListener('load', cargarTodasLasTablas(false));
+
+    
+    // Recarga los datos automáticamente cada 5 minutos (300,000 milisegundos)
+    setInterval(() => cargarTodasLasTablas(true), 300000); 
+  </script>
+</body>
+</html>

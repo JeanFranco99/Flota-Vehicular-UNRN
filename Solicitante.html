@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <style>
+        :root { 
+          --primary-color: #B71C1C; /* Rojo Institucional */
+          --light-gray: #f4f6f8; 
+          --dark-text: #333; 
+          --border-color: #dee2e6; 
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--light-gray); margin: 0; color: var(--dark-text); }
+        .logo { display: block; margin: 20px auto 15px; max-height: 70px; width: auto; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        h1, h2 { color: var(--primary-color); }
+        h1 { text-align: center; margin-bottom: 20px; font-size: 2rem; }
+        h2 { border-left: 4px solid var(--primary-color); padding-left: 15px; margin-top: 40px; }
+        section { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 600px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+        .full-width { grid-column: 1 / -1; }
+        input, select, textarea, button { font-family: inherit; font-size: 1rem; padding: 12px; margin-top: 5px; border: 1px solid var(--border-color); border-radius: 6px; width: 100%; box-sizing: border-box; }
+        button { background-color: var(--primary-color); color: white; border: none; cursor: pointer; transition: background-color 0.2s; font-weight: 500; }
+        button:hover { background-color: #9A1616; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 14px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background-color: #f8f9fa; font-weight: 600; text-transform: uppercase; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    
+    <img src="https://th.bing.com/th/id/OIP.qZgROn3laIEa7N5z1VYmcQAAAA?w=262&h=81&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3" alt="Logo UNRN" class="logo">
+    
+    
+    <div class="container">
+      <h1>Panel del Solicitante</h1>
+
+      <section>
+          <h2>Nueva Solicitud de Vehículo</h2>
+          <form id="formSolicitud" onsubmit="enviarNuevaSolicitud(event)">
+              <div class="form-grid">
+                  <label>Fecha y Hora de Salida <input type="datetime-local" name="salida" required></label>
+                  <label>Fecha y Hora de Regreso <input type="datetime-local" name="regreso" required></label>
+                  <label class="full-width">Itinerario <textarea name="itinerario" rows="3" required placeholder="Ej: Viedma -> Bariloche -> Viedma"></textarea></label>
+                  <label class="full-width">Tareas a realizar <textarea name="tareas" rows="3" required placeholder="Ej: Participación en congreso..."></textarea></label>
+                  <label>Participantes <input type="text" name="participantes" required placeholder="Nombres de los pasajeros"></label>
+                  <label>Conductores autorizados <input type="text" name="conductores" required placeholder="Nombres de los conductores"></label>
+              </div>
+              <button type="submit" style="margin-top: 20px; width: auto; padding: 12px 30px;">Enviar Solicitud</button>
+          </form>
+      </section>
+
+      <section>
+          <h2>Mis Solicitudes Activas (Pendientes y Aprobadas)</h2>
+          <table id="tablaActivas">
+              <thead><tr><th>ID</th><th>Salida</th><th>Regreso</th><th>Estado</th><th>Vehículo</th><th>Observaciones</th></tr></thead>
+              <tbody></tbody>
+          </table>
+      </section>
+
+      <section>
+          <h2>Historial de Solicitudes (Finalizadas y Rechazadas)</h2>
+          <table id="tablaHistorial">
+              <thead><tr><th>ID</th><th>Salida</th><th>Regreso</th><th>Estado</th><th>Vehículo</th><th>Observaciones</th></tr></thead>
+              <tbody></tbody>
+          </table>
+      </section>
+    </div>
+
+    <script>
+        function run(funcName, ...args) {
+            return new Promise((resolve, reject) => {
+                google.script.run
+                    .withSuccessHandler(resolve)
+                    .withFailureHandler(reject)
+                    [funcName](...args);
+            });
+        }
+
+        async function enviarNuevaSolicitud(event) {
+            event.preventDefault();
+            const form = document.getElementById('formSolicitud');
+            const button = form.querySelector('button');
+            const formData = Object.fromEntries(new FormData(form).entries());
+
+            if (new Date(formData.regreso) <= new Date(formData.salida)) {
+              alert('Error: La fecha de regreso debe ser posterior a la de salida.');
+              return;
+            }
+
+            button.disabled = true;
+            button.textContent = 'Enviando...';
+
+            try {
+                const response = await run('enviarSolicitud', formData);
+                alert(response.message);
+                form.reset();
+                cargarTodasLasSolicitudes();
+            } catch (err) {
+                alert('Error al Enviar: ' + err.message);
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Enviar Solicitud';
+            }
+        }
+
+        function poblarTabla(tablaId, solicitudes) {
+            const tbody = document.querySelector(`#${tablaId} tbody`);
+            if (solicitudes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">No hay solicitudes para mostrar.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = solicitudes.map(s => 
+                `<tr>
+                    <td>${s.id}</td>
+                    <td>${s.salida}</td>
+                    <td>${s.regreso}</td>
+                    <td>${s.estado}</td>
+                    <td>${s.vehiculoAsignado || 'N/A'}</td>
+                    <td>${s.observaciones || ''}</td>
+                </tr>`
+            ).join('');
+        }
+        
+        async function cargarTodasLasSolicitudes() {
+            try {
+                const [activas, historial] = await Promise.all([
+                    run('listarSolicitudesUsuarioPorEstados', ['Pendiente', 'Aprobada']),
+                    run('listarSolicitudesUsuarioPorEstados', ['Finalizada', 'Rechazada'])
+                ]);
+                poblarTabla('tablaActivas', activas);
+                poblarTabla('tablaHistorial', historial);
+            } catch(err) {
+                document.body.innerHTML = '<h1>Error al cargar los datos. Por favor, recarga la página.</h1><p>' + err.message + '</p>';
+            }
+        }
+
+        window.addEventListener('load', cargarTodasLasSolicitudes);
+    </script>
+</body>
+</html>
