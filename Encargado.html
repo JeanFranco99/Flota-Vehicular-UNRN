@@ -2,177 +2,1089 @@
 <html>
 <head>
   <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Google Fonts: DM Sans + DM Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
     :root { 
-      --primary-color: #B71C1C;
-      --secondary-color: #d32f2f;
+      /* Rojo institucional UNRN */
+      --primary: #B71C1C;
+      --primary-hover: #9A1616;
+      --primary-light: rgba(183, 28, 28, 0.08);
+      
+      /* Grises neutros */
+      --gray-50: #fafafa;
+      --gray-100: #f4f4f5;
+      --gray-200: #e4e4e7;
+      --gray-300: #d4d4d8;
+      --gray-400: #a1a1aa;
+      --gray-500: #71717a;
+      --gray-600: #52525b;
+      --gray-700: #3f3f46;
+      --gray-800: #27272a;
+      --gray-900: #18181b;
+      
+      /* Semántica de estados */
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --warning: #eab308;
+      --warning-bg: #fef9c3;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --info: #2563eb;
+      --info-bg: #dbeafe;
+      
       --print-color: #0275d8;
-      --light-gray: #f4f6f8; 
-      --dark-text: #333; 
-      --border-color: #dee2e6; 
+      --header-height: 72px;
+      
+      /* Sombras */
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
     }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--light-gray); margin: 0; color: var(--dark-text); }
-    .logo { display: block; margin: 20px auto 15px; max-height: 70px; width: auto; }
-    .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
-    h1, h2, h3 { color: var(--primary-color); }
-    h1 { text-align: center; margin-bottom: 20px; font-size: 2rem; }
-    h2 { border-left: 4px solid var(--secondary-color); padding-left: 15px; margin-top: 40px; }
     
-    /* --- INICIO: ESTILOS MODIFICADOS PARA LAYOUT LATERAL --- */
-
-    .main-layout {
-      display: flex;
-      align-items: flex-start; /* Alinea las columnas en la parte superior */
-      gap: 25px; /* Espacio entre el menú y el contenido */
-      margin-top: 25px;
+    * { box-sizing: border-box; }
+    
+    body { 
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+      background-color: var(--gray-100); 
+      margin: 0; 
+      color: var(--gray-800); 
+      min-height: 100vh;
     }
-
-    .tab-nav { 
+    
+    /* Elementos mono para IDs, patentes, fechas */
+    .mono, .patente, .fecha, .id, table td:first-child, .badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.9em;
+      letter-spacing: -0.02em;
+    }
+    
+    /* ==================== HEADER ==================== */
+    .header {
+      background: #1a1a1a;
+      color: white;
+      padding: 0 28px;
+      height: var(--header-height);
       display: flex;
-      flex-direction: column; /* Apila los botones verticalmente */
-      width: 240px;          /* Ancho de la barra de navegación */
-      flex-shrink: 0;        /* Evita que el menú se encoja si el contenido es muy grande */
-      border: 1px solid var(--border-color); /* Quita el borde inferior original y pone uno completo */
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    
+    .header-logo {
+      height: 44px;
+      width: auto;
       border-radius: 8px;
-      padding: 8px;
-      background-color: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      background: rgba(255,255,255,0.05);
+      padding: 4px;
     }
-    .tab-button { 
-      padding: 15px 20px; 
-      cursor: pointer; 
-      border: none; 
-      background-color: transparent; 
-      font-size: 16px; 
-      color: #555;
-      border-radius: 6px; /* Bordes redondeados para cada botón */
-      margin-bottom: 4px; /* Espacio entre botones */
-      transition: background-color 0.2s, color 0.2s;
+    
+    .header-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: white;
+    }
+    
+    .header-subtitle {
+      font-size: 0.8rem;
+      color: #a0aec0;
+      margin-top: 3px;
+    }
+    
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-btn.mobile-menu-btn {
+      display: none !important;
+    }
+    
+    .header-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      position: relative;
+    }
+    
+    .header-btn:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.15);
+    }
+    
+    .header-btn .badge-alert {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--danger);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      min-width: 24px;
+      height: 24px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Mono', monospace;
+      border: 2px solid #1a1a1a;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+    }
+    
+    .header-btn .badge-alert:empty,
+    .header-btn .badge-alert[data-count="0"] {
+      display: none;
+    }
+    
+    /* ==================== LAYOUT PRINCIPAL ==================== */
+    .app-layout {
+      display: flex;
+      min-height: calc(100vh - var(--header-height));
+    }
+    
+    /* ==================== SIDEBAR ==================== */
+    .sidebar {
+      width: 280px;
+      background: #fafbfc;
+      border-right: 1px solid #e0e7ff;
+      padding: 32px 20px;
+      flex-shrink: 0;
+      position: sticky;
+      top: var(--header-height);
+      height: calc(100vh - var(--header-height));
+      overflow-y: auto;
+    }
+    
+    .sidebar-section {
+      margin-bottom: 32px;
+    }
+    
+    .sidebar-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #94a3b8;
+      padding: 0 12px;
+      margin-bottom: 12px;
+      display: block;
+    }
+    
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      background: transparent;
       width: 100%;
-      text-align: left; /* Alinea el texto a la izquierda */
-      border-bottom: none !important; /* Sobrescribe el borde inferior original */
-    }
-     .tab-button:last-child {
-      margin-bottom: 0;
-    }
-    .tab-button:hover {
-      background-color: #e9ecef;
-    }
-    .tab-button.active { 
-      font-weight: 600; 
-      color: white; 
-      background-color: var(--primary-color);
+      text-align: left;
+      font-family: inherit;
+      font-size: 0.96rem;
+      color: #64748b;
+      position: relative;
+      font-weight: 500;
     }
     
-    .tab-content-area {
-      flex-grow: 1; /* Hace que el área de contenido ocupe el espacio restante */
-      min-width: 0; /* Arreglo de Flexbox para evitar que el contenido se desborde */
+    .nav-item:hover {
+      background: #f1f5f9;
+      color: #334155;
+    }
+    
+    .nav-item.active {
+      background: linear-gradient(135deg, #B71C1C 0%, #9A1616 100%);
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(183, 28, 28, 0.2);
+    }
+    
+    .nav-item .icon {
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    
+    .nav-item .badge-count {
+      margin-left: auto;
+      background: var(--danger);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      min-width: 24px;
+      height: 24px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Mono', monospace;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
+    }
+    
+    .nav-item.active .badge-count {
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+      box-shadow: none;
+    }
+    
+    /* ==================== CONTENIDO PRINCIPAL ==================== */
+    .main-content {
+      flex: 1;
+      padding: 40px 44px;
+      min-width: 0;
+      background: #fafbfc;
+    }
+    
+    .page-header {
+      margin-bottom: 36px;
+    }
+    
+    .page-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.04em;
+    }
+    
+    .page-subtitle {
+      font-size: 0.98rem;
+      color: #64748b;
+      margin: 0;
+    }
+    
+    /* ==================== CARDS DE MÉTRICAS ==================== */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    
+    .metric-card {
+      background: white;
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      border: 1px solid #f0f4f8;
+    }
+    
+    .metric-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      border-color: #e0e7f1;
+    }
+    
+    .metric-card .value {
+      font-size: 3.2rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      margin-bottom: 12px;
+    }
+    
+    .metric-card .label {
+      font-size: 0.92rem;
+      color: #64748b;
+      margin: 0;
+      font-weight: 500;
+    }
+    
+    .metric-card.pendientes .value { color: var(--danger); }
+    .metric-card.disponibles .value { color: var(--success); }
+    .metric-card.asignados .value { color: var(--info); }
+    .metric-card.mantenimiento .value { color: var(--warning); }
+    
+    /* ==================== TABLAS ==================== */
+    .table-container {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      overflow-x: auto;
+      overflow-y: visible;
+      margin-bottom: 40px;
+      border: 1px solid #f0f4f8;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .table-header {
+      padding: 24px 28px;
+      border-bottom: 1px solid #f0f4f8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .table-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+    }
+    
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      min-width: 760px;
+    }
+    
+    th { 
+      background: #f8fafc; 
+      font-weight: 700; 
+      font-size: 0.75rem; 
+      text-transform: uppercase; 
+      letter-spacing: 0.08em;
+      color: #64748b;
+      padding: 16px 28px;
+      text-align: left;
+      border-bottom: 2px solid #e2e8f0;
+      font-family: 'DM Mono', monospace;
+    }
+    
+    td { 
+      padding: 18px 28px; 
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+      font-size: 0.96rem;
+      color: #334155;
     }
 
-    .tab-content { display: none; }
-    .tab-content.active { 
-        display: block; 
-        animation: fadeIn 0.5s; 
-        background: white;
-        padding: 25px;
+    th:last-child,
+    td:last-child {
+      min-width: 150px;
+      width: 1%;
+      white-space: nowrap;
+    }
+
+    td .action-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      min-width: max-content;
+    }
+    
+    tr:last-child td {
+      border-bottom: none;
+    }
+    
+    tr:hover td {
+      background: #f8fafc;
+    }
+    
+    /* ==================== ESTADOS ==================== */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    
+    .status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    
+    .status.pendiente { background: var(--danger-bg); color: var(--danger); }
+    .status.aprobada, .status.disponible { background: var(--success-bg); color: var(--success); }
+    .status.asignado { background: var(--info-bg); color: var(--info); }
+    .status.mantenimiento { background: var(--warning-bg); color: var(--warning); }
+    .status.finalizada { background: #f1f5f9; color: #64748b; }
+    .status.rechazada { background: var(--danger-bg); color: var(--danger); }
+    
+    .details-grid { 
+      display: grid; 
+      grid-template-columns: auto 1fr; 
+      gap: 8px 20px;
+      margin-bottom: 16px;
+    }
+    
+    .details-grid strong { 
+      color: #64748b; 
+      font-weight: 600;
+    }
+    
+    /* ==================== BOTONES ==================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      min-height: 40px;
+      white-space: nowrap;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #B71C1C 0%, #9A1616 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba(183, 28, 28, 0.2);
+    }
+    
+    .btn-primary:hover {
+      box-shadow: 0 6px 16px rgba(183, 28, 28, 0.3);
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e0;
+    }
+    
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+    
+    .btn-success {
+      background: #16a34a;
+      color: white;
+      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.2);
+    }
+    
+    .btn-success:hover {
+      background: #15803d;
+      box-shadow: 0 6px 16px rgba(22, 163, 74, 0.3);
+    }
+    
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+    }
+    
+    .btn-danger:hover {
+      background: #b91c1c;
+      box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+    }
+    
+    .btn-print {
+      background: var(--print-color);
+      color: white;
+      box-shadow: 0 2px 8px rgba(2, 117, 216, 0.2);
+    }
+    
+    .btn-print:hover {
+      background: #025aa5;
+      box-shadow: 0 6px 16px rgba(2, 117, 216, 0.3);
+    }
+    
+    .btn-sm {
+      padding: 8px 14px;
+      font-size: 0.86rem;
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    /* ==================== FORMULARIOS ==================== */
+    input, select, textarea {
+      font-family: inherit;
+      font-size: 0.96rem;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e0;
+      border-radius: 10px;
+      width: 100%;
+      box-sizing: border-box;
+      transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+      background: white;
+      color: #334155;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.1);
+    }
+    
+    input::placeholder, textarea::placeholder {
+      color: #94a3b8;
+    }
+    
+    input[readonly], input:disabled {
+      background: #f8fafc;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+    
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23334155' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 32px;
+    }
+    
+    /* ==================== MODALES ==================== */
+    .modal-overlay { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: rgba(0,0,0,0.55); 
+      z-index: 1000; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      opacity: 0; 
+      visibility: hidden; 
+      transition: opacity 0.3s, visibility 0.3s; 
+      backdrop-filter: blur(2px);
+    }
+    
+    .modal-overlay.visible { 
+      opacity: 1; 
+      visibility: visible; 
+    }
+    
+    .modal-content { 
+      background: white; 
+      padding: 36px; 
+      border-radius: 18px; 
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1);
+      width: 90%; 
+      max-width: 600px; 
+      transform: scale(0.95); 
+      transition: transform 0.3s; 
+      position: relative; 
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .control-modal {
+      max-width: 800px;
+    }
+    
+    .modal-overlay.visible .modal-content {
+      transform: scale(1);
+    }
+    
+    .modal-content h3 { 
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    
+    .modal-content > p {
+      color: #64748b;
+      margin-top: 0;
+      font-size: 0.96rem;
+    }
+    
+    .modal-actions { 
+      margin-top: 28px; 
+      display: flex; 
+      justify-content: flex-end; 
+      gap: 12px; 
+      flex-wrap: wrap;
+    }
+    
+    .close-button { 
+      position: absolute; 
+      top: 20px; 
+      right: 20px; 
+      font-size: 28px; 
+      font-weight: 600;
+      cursor: pointer; 
+      color: #cbd5e0;
+      background: none;
+      border: none;
+      width: auto;
+      padding: 0;
+      transition: color 0.2s;
+    }
+    
+    .close-button:hover {
+      color: #64748b;
+    }
+    
+     /* ==================== LOADER ==================== */
+     .loader-overlay { 
+       position: fixed; 
+       top: 0; 
+       left: 0; 
+       width: 100%; 
+       height: 100%; 
+       background: rgba(255,255,255,0.85); 
+       z-index: 2000; 
+       display: flex; 
+       justify-content: center; 
+       align-items: center; 
+       display: none;
+       backdrop-filter: blur(3px);
+     }
+     
+     .spinner { 
+       border: 4px solid #e2e8f0; 
+       border-top: 4px solid var(--primary); 
+       border-radius: 50%; 
+       width: 52px; 
+       height: 52px; 
+       animation: spin 0.8s linear infinite;
+       box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.08);
+     }
+     
+     @keyframes spin { 
+       0% { transform: rotate(0deg); } 
+       100% { transform: rotate(360deg); } 
+     }
+    
+    /* ==================== UTILIDADES ==================== */
+    .form-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+      gap: 16px; 
+      margin-bottom: 20px; 
+    }
+    
+    .form-section { 
+      padding: 24px; 
+      border: 1px solid #e2e8f0; 
+      border-radius: 12px; 
+      background: #f8fafc;
+      margin-bottom: 20px;
+    }
+    
+    .form-section h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 1.05rem;
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    .checklist-item {
+      margin: 8px 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) repeat(3, auto);
+      gap: 10px;
+      align-items: center;
+    }
+
+    .checklist-item label {
+      min-width: 0;
+    }
+
+    .checklist-option {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .checklist-option input {
+      width: auto;
+      margin: 0;
+    }
+    
+    /* Alertas */
+    .alert-area {
+      margin-bottom: 28px;
+      padding: 18px 22px;
+      border-radius: 12px;
+      border-left: 4px solid;
+      background: #fef9c3;
+      border-color: var(--warning);
+    }
+    
+    .alert-area.warning {
+      background: #fef9c3;
+      color: #854d0e;
+      border-left-color: var(--warning);
+    }
+    
+    .alert-area h4 {
+      margin: 0 0 10px 0;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: #854d0e;
+    }
+    
+    .alert-area ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    
+    .alert-area li {
+      margin: 6px 0;
+      font-size: 0.94rem;
+    }
+    
+    /* Animaciones de transición */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn { 
+      from { opacity: 0; transform: translateY(8px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+    
+    /* Ocultar elementos legacy */
+    .logo, .container, .tab-nav, .tab-content-area {
+      display: none !important;
+    }
+
+    @media (max-width: 900px) {
+      body {
+        overflow-x: hidden;
+      }
+
+      .header {
+        height: auto;
+        min-height: var(--header-height);
+        padding: 14px 18px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .header-brand {
+        min-width: 0;
+      }
+
+      .header-title {
+        font-size: 1.05rem;
+      }
+
+      .header-subtitle {
+        font-size: 0.75rem;
+      }
+
+      .header-logo {
+        height: 36px;
+      }
+
+      .app-layout {
+        display: block;
+        min-height: auto;
+      }
+
+      .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .header-btn.mobile-menu-btn {
+        display: inline-flex !important;
+      }
+
+      .sidebar {
+        width: 100%;
+        max-height: calc(100vh - var(--header-height));
+        height: auto;
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        right: 0;
+        z-index: 150;
+        display: none !important;
+        padding: 12px;
+        border-right: 0;
+        border-bottom: 1px solid #e0e7ff;
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.18);
+        overflow-x: auto;
+        overflow-y: auto;
+      }
+
+      body.mobile-sidebar-open .sidebar {
+        display: block !important;
+      }
+
+      .sidebar-section {
+        margin-bottom: 12px;
+      }
+
+      .sidebar-nav {
+        flex-direction: row;
+        gap: 8px;
+        min-width: max-content;
+      }
+
+      .sidebar-label {
+        padding: 0 4px;
+        margin-bottom: 8px;
+      }
+
+      .nav-item {
+        width: auto;
+        min-width: 128px;
+        padding: 11px 12px;
+      }
+
+      .main-content {
+        width: 100%;
+        max-width: 100%;
+        padding: 24px 16px;
+        overflow: hidden;
+      }
+
+      .page-header {
+        margin-bottom: 20px;
+      }
+
+      .page-header[style] {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px;
+      }
+
+      .page-title {
+        font-size: 1.45rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+      }
+
+      .metric-card {
+        padding: 18px;
+      }
+
+      .metric-card .value {
+        font-size: 2.3rem;
+      }
+
+      th,
+      td {
+        padding: 14px 16px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        background: #fafbfc;
+      }
+
+      .header {
+        position: sticky;
+      }
+
+      .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .header-btn {
+        padding: 9px 12px;
+      }
+
+      table {
+        min-width: 680px;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .btn-sm {
+        min-width: 112px;
+        width: auto;
+      }
+
+      .table-container {
+        border-radius: 10px;
+        margin-left: -4px;
+        margin-right: -4px;
+      }
+
+      .modal-overlay {
+        align-items: stretch;
+        padding: 0;
+      }
+
+      .modal-content,
+      .control-modal {
+        width: 100%;
+        max-width: none !important;
+        max-height: 100vh;
+        min-height: 100vh;
+        border-radius: 0;
+        padding: 22px 16px 18px;
+        transform: none;
+      }
+
+      .modal-overlay.visible .modal-content {
+        transform: none;
+      }
+
+      .modal-content h3 {
+        padding-right: 40px;
+        font-size: 1.25rem;
+      }
+
+      .close-button {
+        top: 16px;
+        right: 16px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-section {
+        padding: 14px;
+        border-radius: 10px;
+      }
+
+      .form-section summary {
+        margin: -4px;
+      }
+
+      .checklist-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 10px 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .checklist-option {
+        min-height: 36px;
+        padding: 6px 10px;
+        border: 1px solid #dbe3ef;
         border-radius: 8px;
-        border: 1px solid var(--border-color);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
-    /* --- FIN: ESTILOS MODIFICADOS --- */
-    
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
-    .modal-overlay.visible { opacity: 1; visibility: visible; }
-    .modal-content { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); width: 90%; max-width: 600px; transform: scale(0.95); transition: transform 0.3s; position: relative; }
-    .modal-content h3 { margin-top: 0; font-size: 1.5rem; }
-    .modal-actions { margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px; }
-    .close-button { position: absolute; top: 15px; right: 20px; font-size: 28px; font-weight: bold; cursor: pointer; color: #aaa; }
-    
-    .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.7); z-index: 2000; display: flex; justify-content: center; align-items: center; display: none; }
-    .spinner { border: 6px solid #f3f3f3; border-top: 6px solid var(--primary-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        background: white;
+      }
 
-    input, select, textarea, button { font-family: inherit; font-size: 1rem; padding: 12px; margin-top: 5px; border: 1px solid var(--border-color); border-radius: 6px; width: 100%; box-sizing: border-box; }
-    button { background-color: var(--primary-color); color: white; border: none; cursor: pointer; transition: background-color 0.2s, box-shadow 0.2s; font-weight: 500; }
-    button:hover { background-color: #9A1616; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    button.secondary { background-color: #6c757d; }
-    button.secondary:hover { background-color: #5a6268; }
-      button.print-button {
-      background-color: var(--print-color);
+      .checklist-option input {
+        width: 18px;
+        height: 18px;
+      }
+
+      .modal-actions {
+        position: sticky;
+        bottom: -18px;
+        margin-left: -16px;
+        margin-right: -16px;
+        padding: 12px 16px 18px;
+        background: white;
+        border-top: 1px solid #e2e8f0;
+      }
+
+      .modal-actions .btn,
+      .modal-actions button {
+        width: 100%;
+      }
     }
-    button.print-button:hover {
-        background-color: #025aa5;
-    }
-    button:disabled { background-color: #ccc; cursor: not-allowed; }
-    
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; }
-    th, td { padding: 14px; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-    th { background-color: #f8f9fa; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
-    
-    .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-    .card { background: var(--light-gray); border: 1px solid var(--border-color); padding: 25px; border-radius: 8px; text-align: center; }
-    .card .value { font-size: 2.8rem; font-weight: 700; color: var(--primary-color); }
-    .card .label { font-size: 1.1rem; color: #6c757d; margin-top: 5px; }
-    
-    .details-grid { display: grid; grid-template-columns: auto 1fr; gap: 5px 20px; }
-    .details-grid strong { color: #555; }
-    
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-    .form-section { padding: 20px; border: 1px solid var(--border-color); border-radius: 8px; }
-    
-    .notification-area { margin-bottom: 20px; padding: 15px; border-radius: 8px; border: 1px solid; }
-    .notification-area.warning { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
-    .notification-area h3 { margin-top: 0; font-size: 1.2rem; }
-    .notification-area ul { padding-left: 20px; margin: 0; }
   </style>
 </head>
 <body>
 
+  <!-- Loader -->
   <div class="loader-overlay" id="loader"><div class="spinner"></div></div>
 
+  <!-- Modal: Rechazo -->
   <div class="modal-overlay" id="modalRechazo">
     <div class="modal-content">
-      <span class="close-button" onclick="ocultarModal('modalRechazo')">&times;</span>
+      <button class="close-button" onclick="ocultarModal('modalRechazo')">&times;</button>
       <h3>Motivo del Rechazo</h3>
-      <p>Por favor, indica el motivo para rechazar la solicitud <strong id="modalRechazoId"></strong>.</p>
+      <p>Por favor, indica el motivo para rechazar la solicitud <strong id="modalRechazoId" class="mono"></strong>.</p>
       <textarea id="motivoRechazoInput" rows="3" placeholder="Ej: Falta de disponibilidad de vehículos..."></textarea>
       <div class="modal-actions">
-        <button class="secondary" onclick="ocultarModal('modalRechazo')">Cancelar</button>
-        <button onclick="confirmarRechazo()">Confirmar Rechazo</button>
+        <button class="btn btn-secondary" onclick="ocultarModal('modalRechazo')">Cancelar</button>
+        <button class="btn btn-danger" onclick="confirmarRechazo()">Confirmar Rechazo</button>
       </div>
     </div>
   </div>
   
+  <!-- Modal: Detalles -->
   <div class="modal-overlay" id="modalDetalles">
     <div class="modal-content">
-      <span class="close-button" onclick="ocultarModal('modalDetalles')">&times;</span>
+      <button class="close-button" onclick="ocultarModal('modalDetalles')">&times;</button>
       <h3 id="modalDetallesTitulo">Detalles de la Solicitud</h3>
       <div id="modalDetallesContenido" class="details-grid"></div>
       <div class="modal-actions">
-        <button onclick="ocultarModal('modalDetalles')">Cerrar</button>
+        <button class="btn btn-primary" onclick="ocultarModal('modalDetalles')">Cerrar</button>
       </div>
     </div>
   </div>
 
+  <!-- Modal: Mensaje -->
   <div class="modal-overlay" id="modalMensaje">
     <div class="modal-content">
-      <span class="close-button" onclick="ocultarModal('modalMensaje')">&times;</span>
+      <button class="close-button" onclick="ocultarModal('modalMensaje')">&times;</button>
       <h3 id="modalMensajeTitulo"></h3>
       <p id="modalMensajeTexto"></p>
-      <div class="modal-actions"><button onclick="ocultarModal('modalMensaje')">Cerrar</button></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="ocultarModal('modalMensaje')">Cerrar</button>
+      </div>
     </div>
   </div>
   
+  <!-- Modal: Vehículo -->
   <div class="modal-overlay" id="modalVehiculo">
     <div class="modal-content">
-        <span class="close-button" onclick="ocultarModal('modalVehiculo')">&times;</span>
+        <button class="close-button" onclick="ocultarModal('modalVehiculo')">&times;</button>
         <h3 id="modalVehiculoTitulo">Agregar Vehículo</h3>
         <form id="formVehiculo" onsubmit="handleGuardarVehiculo(event)">
             <input type="hidden" id="vehiculoId" name="id">
             <div class="form-grid">
-              <input type="text" id="vehiculoPatente" name="patente" placeholder="Patente" required>
+              <input type="text" id="vehiculoPatente" name="patente" placeholder="Patente" required class="patente">
               <input type="text" id="vehiculoMarca" name="marca" placeholder="Marca" required>
               <input type="text" id="vehiculoModelo" name="modelo" placeholder="Modelo" required>
               <input type="number" id="vehiculoAnio" name="anio" placeholder="Año" required>
@@ -181,127 +1093,345 @@
               <input type="number" id="vehiculoVelocidad" name="velocidadMaxima" placeholder="Velocidad Máxima (km/h)">
               <textarea id="vehiculoObservaciones" name="observaciones" placeholder="Observaciones" style="grid-column: 1 / -1;"></textarea>
             </div>
-            <hr>
             <div class="form-grid">
               <label><strong>Fecha Vencimiento RTO:</strong>
-                <input type="date" id="vehiculoFechaVtoRto" name="fechaVtoRto" required>
+                <input type="date" id="vehiculoFechaVtoRto" name="fechaVtoRto" required class="fecha">
               </label>
               <label><strong>Fecha Vencimiento Seguro:</strong>
-                <input type="date" id="vehiculoFechaVtoSeguro" name="fechaVtoSeguro" required>
+                <input type="date" id="vehiculoFechaVtoSeguro" name="fechaVtoSeguro" required class="fecha">
               </label>
             </div>
             <div class="modal-actions">
-                <button class="secondary" type="button" onclick="ocultarModal('modalVehiculo')">Cancelar</button>
-                <button type="submit" id="botonGuardarVehiculo">Guardar</button>
+                <button class="btn btn-secondary" type="button" onclick="ocultarModal('modalVehiculo')">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="botonGuardarVehiculo">Guardar</button>
             </div>
         </form>
         <div id="statusVehiculo"></div>
     </div>
   </div>
-
-  <div class="container">
-    <img src="https://drive.google.com/file/d/1wp0Og2dHgQOlfWkNfg7rtaHztt3Fsee3/view" alt="Logo Universidad" class="logo">
-    <h1>Panel del Encargado de Flota</h1>
-
-    <div id="notificacionesVencimientos" class="notification-area warning" style="display: none;">
-        <h3>⚠️ Alertas de Vencimiento</h3>
-        <ul id="listaNotificaciones"></ul>
-    </div>
-
-    <div class="main-layout">
+  
+  <!-- Modal: Control Vehicular -->
+  <div class="modal-overlay" id="modalControl">
+    <div class="modal-content control-modal">
+        <button class="close-button" onclick="ocultarModal('modalControl')">&times;</button>
+        <h3 id="modalControlTitulo">Control Vehicular</h3>
+        <p id="modalControlSubtitulo" style="color: var(--gray-500); margin-bottom: 20px;"></p>
         
-        <nav class="tab-nav">
-          <button class="tab-button active" onclick="cambiarTab(event, 'tabDashboard')">Dashboard</button>
-          <button class="tab-button" onclick="cambiarTab(event, 'tabPendientes')">Pendientes</button>
-          <button class="tab-button" onclick="cambiarTab(event, 'tabActivas')">Activas</button>
-          <button class="tab-button" onclick="cambiarTab(event, 'tabHistorial')">Historial</button>
-          <button class="tab-button" onclick="cambiarTab(event, 'tabVehiculos')">Vehículos</button>
-          <button class="tab-button" onclick="cambiarTab(event, 'tabMantenimiento')">Mantenimiento</button>
+        <form id="formControl" onsubmit="guardarControlVehicular(event)">
+            <input type="hidden" id="controlIdSolicitud" name="idSolicitud">
+            <input type="hidden" id="controlTipo" name="tipo">
+            
+            <div class="form-grid" style="margin-bottom: 20px;">
+                <div>
+                    <label><strong>Patente:</strong>
+                        <input type="text" id="controlPatente" readonly style="background: var(--gray-100);" class="patente">
+                    </label>
+                </div>
+                <div>
+                    <label><strong>Kilómetros:</strong>
+                        <input type="number" id="controlKm" name="kilometros" placeholder="Km actuales">
+                    </label>
+                </div>
+            </div>
+            
+            <div id="checklistSecciones" style="margin-top: 20px;">
+                <!-- Secciones generadas dinámicamente -->
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <label><strong>Observaciones:</strong>
+                    <textarea id="controlObservaciones" name="observaciones" rows="3" placeholder="Observaciones adicionales..."></textarea>
+                </label>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn btn-secondary" type="button" onclick="ocultarModal('modalControl')">Cancelar</button>
+                <button class="btn btn-secondary" type="button" id="botonOmitirControl" onclick="omitirControl(document.getElementById('controlTipo').value, document.getElementById('controlIdSolicitud').value)">Omitir Control</button>
+                <button type="submit" class="btn btn-primary" id="botonGuardarControl">Guardar Control</button>
+            </div>
+        </form>
+    </div>
+  </div>
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="header">
+    <div class="header-brand">
+      <img src="https://carrerasunrn.com/wp-content/themes/buscador-de-carreras/images/logounrn.jpg" alt="Logo UNRN" class="header-logo">
+      <div>
+        <div class="header-title">Flota Vehicular UNRN</div>
+        <div class="header-subtitle">Panel del Encargado</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="header-btn mobile-menu-btn" id="btnMobileMenu" aria-controls="sidebarPrincipal" aria-expanded="false">
+        <span>☰</span>
+        <span>Menú</span>
+      </button>
+      <button class="header-btn" id="btnAlertas" onclick="cambiarTab(null, 'tabPendientes')">
+        <span>🔔</span>
+        <span>Alertas</span>
+        <span class="badge-alert" id="badgeAlertas" data-count="0">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== LAYOUT PRINCIPAL ==================== -->
+  <div class="app-layout">
+    
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar" id="sidebarPrincipal">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Principal</div>
+        <nav class="sidebar-nav">
+          <button class="nav-item active" onclick="cambiarTab(event, 'tabDashboard')" id="navDashboard">
+            <span class="icon">📊</span>
+            <span>Dashboard</span>
+          </button>
+          <button class="nav-item" onclick="cambiarTab(event, 'tabPendientes')" id="navPendientes">
+            <span class="icon">⏳</span>
+            <span>Pendientes</span>
+            <span class="badge-count" id="badgePendientes">0</span>
+          </button>
+          <button class="nav-item" onclick="cambiarTab(event, 'tabActivas')" id="navActivas">
+            <span class="icon">🚗</span>
+            <span>Activas</span>
+          </button>
+          <button class="nav-item" onclick="cambiarTab(event, 'tabHistorial')" id="navHistorial">
+            <span class="icon">📋</span>
+            <span>Historial</span>
+          </button>
         </nav>
+      </div>
+      
+      <div class="sidebar-section">
+        <div class="sidebar-label">Gestión</div>
+        <nav class="sidebar-nav">
+          <button class="nav-item" onclick="cambiarTab(event, 'tabVehiculos')" id="navVehiculos">
+            <span class="icon">🚌</span>
+            <span>Vehículos</span>
+          </button>
+          <button class="nav-item" onclick="cambiarTab(event, 'tabMantenimiento')" id="navMantenimiento">
+            <span class="icon">🔧</span>
+            <span>Mantenimiento</span>
+          </button>
+        </nav>
+      </div>
+    </aside>
 
-        <div class="tab-content-area">
-          <div id="tabDashboard" class="tab-content active"><div class="dashboard" id="dashboard-container"></div></div>
-          
-          <div id="tabPendientes" class="tab-content">
-            <h2>Solicitudes Pendientes</h2>
-            <table id="tablaPendientes">
-              <thead><tr><th>ID</th><th>Usuario</th><th>Salida</th><th>Regreso</th><th>Acciones</th><th>Gestión</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
+    <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+    <main class="main-content">
+      
+      <!-- Alertas de vencimientos -->
+      <div id="notificacionesVencimientos" class="alert-area warning" style="display: none;">
+        <h4>⚠️ Alertas de Vencimiento</h4>
+        <ul id="listaNotificaciones"></ul>
+      </div>
 
-          <div id="tabActivas" class="tab-content">
-              <h2>Solicitudes Activas (Aprobadas)</h2>
-              <table id="tablaActivas">
-                  <!-- <thead><tr><th>ID</th><th>Usuario</th><th>Salida</th><th>Regreso</th><th>Vehículo Asignado</th><th>Acciones</th></tr></thead> -->
-                  <thead><tr><th>ID</th><th>Usuario</th><th>Salida</th><th>Regreso</th><th>Vehículo Asignado</th><th>Gestionado por</th><th>Acciones</th></tr></thead>
-                  <tbody></tbody>
-              </table>
+      <!-- Tab: Dashboard -->
+      <div id="tabDashboard" class="tab-content active">
+        <div class="page-header">
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-subtitle">Resumen de la flota vehicular</p>
+        </div>
+        <div class="metrics-grid" id="dashboard-container"></div>
+      </div>
+      
+      <!-- Tab: Pendientes -->
+      <div id="tabPendientes" class="tab-content">
+        <div class="page-header">
+          <h1 class="page-title">Solicitudes Pendientes</h1>
+          <p class="page-subtitle">Solicitudes que requieren aprobación</p>
+        </div>
+        <div class="table-container">
+          <table id="tablaPendientes">
+            <thead><tr><th class="id">ID</th><th>Usuario</th><th>Salida</th><th>Regreso</th><th>Acciones</th><th>Gestión</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab: Activas -->
+      <div id="tabActivas" class="tab-content">
+        <div class="page-header">
+          <h1 class="page-title">Solicitudes Activas</h1>
+          <p class="page-subtitle">Vehículos actualmente en uso</p>
+        </div>
+        <div class="table-container">
+          <table id="tablaActivas">
+            <thead><tr><th class="id">ID</th><th>Usuario</th><th>Salida</th><th>Regreso</th><th>Vehículo</th><th>Gestionado por</th><th>Acciones</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Tab: Historial -->
+      <div id="tabHistorial" class="tab-content">
+        <div class="page-header">
+          <h1 class="page-title">Historial</h1>
+          <p class="page-subtitle">Solicitudes finalizadas y rechazadas</p>
+        </div>
+        <div class="table-container">
+          <table id="tablaHistorial">
+            <thead><tr><th class="id">ID</th><th>Usuario</th><th>Estado</th><th>Gestionado por</th><th>Vehículo</th><th>Observaciones</th><th>Acciones</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Tab: Vehículos -->
+      <div id="tabVehiculos" class="tab-content">
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h1 class="page-title">Vehículos</h1>
+            <p class="page-subtitle">Gestión de la flota</p>
           </div>
-          
-          <div id="tabHistorial" class="tab-content">
-              <h2>Historial (Finalizadas y Rechazadas)</h2>
-              <table id="tablaHistorial">
-                  <!-- <thead><tr><th>ID</th><th>Usuario</th><th>Estado</th><th>Vehículo</th><th>Observaciones</th><th>Acciones</th></tr></thead> -->
-                  <thead><tr><th>ID</th><th>Usuario</th><th>Estado</th><th>Gestionado por</th><th>Vehículo</th><th>Observaciones</th><th>Acciones</th></tr></thead>
-                  <tbody></tbody>
-              </table>
+          <button class="btn btn-primary" onclick="abrirModalParaAgregarVehiculo()">+ Agregar Vehículo</button>
+        </div>
+        <div class="table-container">
+          <table id="tablaVehiculos">
+            <thead>
+                <tr>
+                    <th class="id">ID</th><th>Patente</th><th>Marca/Modelo</th><th>Estado</th><th class="fecha">VTO RTO</th><th class="fecha">VTO Seguro</th><th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Tab: Mantenimiento -->
+      <div id="tabMantenimiento" class="tab-content">
+        <div class="page-header">
+          <h1 class="page-title">Mantenimiento</h1>
+          <p class="page-subtitle">Control de servicios y reparaciones</p>
+        </div>
+        
+        <div class="form-section" style="margin-bottom: 32px;">
+            <h3>Registrar Nuevo Mantenimiento</h3>
+            <form id="formRegistrarMantenimiento" onsubmit="registrarNuevoMantenimiento(event)">
+                <div class="form-grid">
+                    <select name="patente" required><option value="">-- Seleccionar Vehículo --</option></select>
+                    <input name="tipo" placeholder="Tipo (Ej: Cambio de aceite)" required>
+                    <input name="costo" type="number" step="0.01" placeholder="Costo" required>
+                    <input name="responsable" placeholder="Responsable (Ej: Taller Mecánico)" required>
+                    <label>Fecha de Inicio <input type="datetime-local" name="fechaInicio" required class="fecha"></label>
+                    <textarea name="detalle" placeholder="Detalle del mantenimiento..." style="grid-column: 1 / -1;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Registrar Mantenimiento</button>
+            </form>
+        </div>
+        
+        <div class="table-container">
+          <div class="table-header">
+            <h3 class="table-title">En Curso</h3>
           </div>
-          
-          <div id="tabVehiculos" class="tab-content">
-              <h2>Gestión de Vehículos</h2>
-              <button onclick="abrirModalParaAgregarVehiculo()" style="width: auto; padding: 12px 20px; margin-bottom: 20px;">Agregar Nuevo Vehículo</button>
-              <table id="tablaVehiculos">
-                  <thead>
-                      <tr>
-                          <th>ID</th><th>Patente</th><th>Marca/Modelo</th><th>Estado</th><th>VTO RTO</th><th>VTO Seguro</th><th>Acciones</th>
-                      </tr>
-                  </thead>
-                  <tbody></tbody>
-              </table>
+          <table id="tablaMantenimientos">
+            <thead><tr><th class="id">ID</th><th class="patente">Patente</th><th>Tipo</th><th>Detalle</th><th class="fecha">Inicio</th><th>Responsable</th><th>Acciones</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        
+        <div class="table-container">
+          <div class="table-header">
+            <h3 class="table-title">Historial</h3>
           </div>
-          
-          <div id="tabMantenimiento" class="tab-content">
-              <h2>Mantenimiento de Vehículos</h2>
-              <div class="form-section">
-                  <h3>Registrar Nuevo Mantenimiento</h3>
-                  <form id="formRegistrarMantenimiento" onsubmit="registrarNuevoMantenimiento(event)">
-                      <div class="form-grid">
-                          <select name="patente" required><option value="">-- Seleccionar Vehículo --</option></select>
-                          <input name="tipo" placeholder="Tipo (Ej: Cambio de aceite)" required>
-                          <input name="costo" type="number" step="0.01" placeholder="Costo" required>
-                          <input name="responsable" placeholder="Responsable (Ej: Taller Mecánico)" required>
-                          <label>Fecha de Inicio <input type="datetime-local" name="fechaInicio" required></label>
-                          <textarea name="detalle" placeholder="Detalle del mantenimiento..." style="grid-column: 1 / -1;"></textarea>
-                      </div>
-                      <button type="submit" style="margin-top: 15px; width: auto; padding: 12px 25px;">Registrar Mantenimiento</button>
-                  </form>
-              </div>
-              <h2 style="margin-top: 40px;">Mantenimientos en Curso</h2>
-              <table id="tablaMantenimientos">
-                  <thead><tr><th>ID</th><th>Patente</th><th>Tipo</th><th>Detalle</th><th>Inicio</th><th>Responsable</th><th>Acciones</th></tr></thead>
-                  <tbody></tbody>
-              </table>
-              
-              <h2 style="margin-top: 40px;">Historial de Mantenimientos</h2>
-              <table id="tablaMantenimientosHistorial">
-                  <thead><tr><th>ID</th><th>Patente</th><th>Tipo</th><th>Inicio</th><th>Fin</th><th>Responsable</th><th>Costo</th></tr></thead>
-                  <tbody></tbody>
-              </table>
-          </div>
-        </div> </div> </div> <script>
+          <table id="tablaMantenimientosHistorial">
+            <thead><tr><th class="id">ID</th><th class="patente">Patente</th><th>Tipo</th><th class="fecha">Inicio</th><th class="fecha">Fin</th><th>Responsable</th><th>Costo</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      
+    </main>
+  </div>
+
+  <script>
     
     let solicitudesCacheadas = [];
     let vehiculosCacheados = [];
     let scriptUrl = '';
     let mantenimientosActivos = [];
+    const mobileSidebarQuery = window.matchMedia('(max-width: 900px)');
 
     // --- NAVEGACIÓN Y UTILIDADES UI ---
+    function actualizarEstadoBotonMenu() {
+      const botonMenu = document.getElementById('btnMobileMenu');
+      if (botonMenu) {
+        botonMenu.setAttribute('aria-expanded', document.body.classList.contains('mobile-sidebar-open') ? 'true' : 'false');
+      }
+    }
+
+    function estaEnModoMobile() {
+      return mobileSidebarQuery.matches;
+    }
+
+    function syncMobileSidebarState() {
+      if (!estaEnModoMobile()) {
+        document.body.classList.remove('mobile-sidebar-open');
+      }
+      actualizarEstadoBotonMenu();
+    }
+
+    function toggleMobileSidebar() {
+      if (!estaEnModoMobile()) return;
+      document.body.classList.toggle('mobile-sidebar-open');
+      actualizarEstadoBotonMenu();
+    }
+
+    function configurarMenuMobile() {
+      const botonMenu = document.getElementById('btnMobileMenu');
+      if (botonMenu) {
+        botonMenu.addEventListener('click', function(event) {
+          event.preventDefault();
+          toggleMobileSidebar();
+        });
+      }
+
+      document.querySelectorAll('.nav-item').forEach(function(navItem) {
+        navItem.addEventListener('click', function() {
+          if (estaEnModoMobile()) {
+            document.body.classList.remove('mobile-sidebar-open');
+            actualizarEstadoBotonMenu();
+          }
+        });
+      });
+
+      syncMobileSidebarState();
+    }
+
     function cambiarTab(evt, tabName) {
       document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-      document.querySelectorAll('.tab-button').forEach(tb => tb.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(nb => nb.classList.remove('active'));
       document.getElementById(tabName).classList.add('active');
-      evt.currentTarget.classList.add('active');
+      
+      // Actualizar navegación
+      const tabToNav = {
+        'tabDashboard': 'navDashboard',
+        'tabPendientes': 'navPendientes',
+        'tabActivas': 'navActivas',
+        'tabHistorial': 'navHistorial',
+        'tabVehiculos': 'navVehiculos',
+        'tabMantenimiento': 'navMantenimiento'
+      };
+      const navId = tabToNav[tabName];
+      if (navId) {
+        const navEl = document.getElementById(navId);
+        if (navEl) navEl.classList.add('active');
+      }
+      
+      // Click en nav-item
+      if (evt && evt.currentTarget && evt.currentTarget.classList.contains('nav-item')) {
+        evt.currentTarget.classList.add('active');
+      } else if (!evt) {
+        // Click desde header - buscar el nav correcto
+        const navItem = document.querySelector(`.nav-item[onclick*="${tabName}"]`);
+        if (navItem) navItem.classList.add('active');
+      }
+
+      if (evt && estaEnModoMobile()) {
+        document.body.classList.remove('mobile-sidebar-open');
+        actualizarEstadoBotonMenu();
+      }
     }
     function mostrarLoader() { document.getElementById('loader').style.display = 'flex'; }
     function ocultarLoader() { document.getElementById('loader').style.display = 'none'; }
@@ -348,6 +1478,10 @@
                 case 'agregarVehiculo': runner.agregarVehiculo(...args); break;
                 case 'registrarMantenimiento': runner.registrarMantenimiento(...args); break;
                 case 'actualizarEstadoVehiculo': runner.actualizarEstadoVehiculo(...args); break;
+                case 'obtenerChecklistEstandar': runner.obtenerChecklistEstandar(...args); break;
+                case 'obtenerMantenimientosActivosConFechas': runner.obtenerMantenimientosActivosConFechas(...args); break;
+                case 'verificarDisponibilidadVehiculo': runner.verificarDisponibilidadVehiculo(...args); break;
+                case 'verificarDisponibilidadEspecifica': runner.verificarDisponibilidadEspecifica(...args); break;
                 default: reject(new Error("Función desconocida: " + funcName));
             }
         });
@@ -513,7 +1647,28 @@
 
     // --- FUNCIONES DE RENDERIZADO ---
     function renderDashboard(stats) {
-      document.getElementById('dashboard-container').innerHTML = `<div class="card"><div class="value">${stats.solicitudesPendientes}</div><div class="label">Solicitudes Pendientes</div></div><div class="card"><div class="value">${stats.vehiculosDisponibles}</div><div class="label">Vehiculos Disponibles</div></div><div class="card"><div class="value">${stats.vehiculosAsignados}</div><div class="label">Vehiculos Asignados</div></div><div class="card"><div class="value">${stats.vehiculosMantenimiento}</div><div class="label">En Mantenimiento</div></div>`;
+      // Actualizar badges
+      document.getElementById('badgePendientes').textContent = stats.solicitudesPendientes || '0';
+      document.getElementById('badgeAlertas').setAttribute('data-count', stats.solicitudesPendientes || '0');
+      
+      document.getElementById('dashboard-container').innerHTML = `
+        <div class="metric-card pendientes">
+          <div class="value">${stats.solicitudesPendientes}</div>
+          <div class="label">Solicitudes Pendientes</div>
+        </div>
+        <div class="metric-card disponibles">
+          <div class="value">${stats.vehiculosDisponibles}</div>
+          <div class="label">Vehículos Disponibles</div>
+        </div>
+        <div class="metric-card asignados">
+          <div class="value">${stats.vehiculosAsignados}</div>
+          <div class="label">Vehículos Asignados</div>
+        </div>
+        <div class="metric-card mantenimiento">
+          <div class="value">${stats.vehiculosMantenimiento}</div>
+          <div class="label">En Mantenimiento</div>
+        </div>
+      `;
     }
 
     function renderNotificaciones(notificaciones) {
@@ -580,46 +1735,44 @@
   function renderTablaPendientes(pendientes, vehiculos) {
     const vehiculosDisponibles = vehiculos.filter(v => (v.estado || '').toLowerCase() === 'disponible');
     
-    const cabecera = document.querySelector('#tablaPendientes thead tr');
-    cabecera.innerHTML = '<th>ID</th><th>Usuario</th><th>Salida</th><th>Regreso</th><th>Acciones</th>';
-
     const tbody = document.querySelector('#tablaPendientes tbody');
     
     if (pendientes.length > 0) {
         tbody.innerHTML = pendientes.map(s => {
             const opcionesVehiculos = vehiculosDisponibles.map(v => {
-                // Verificar si este vehículo tiene mantenimientos en conflicto
                 const tieneConflicto = verificarConflictoMantenimiento(v.patente, s.salida, s.regreso);
-                const estiloOpcion = tieneConflicto ? 'style="background-color: #ffebee; color: #c62828;"' : '';
+                const estiloOpcion = tieneConflicto ? 'style="background-color: var(--danger-bg); color: var(--danger);"' : '';
                 const textoAdvertencia = tieneConflicto ? ' ⚠️ MANTENIMIENTO' : '';
                 
                 return `<option value="${v.patente}" ${estiloOpcion}>${v.marca} ${v.modelo} - ${v.patente}${textoAdvertencia}</option>`;
             }).join('');
 
             return `<tr>
-                <td>${s.id}</td>
+                <td class="id">#${s.id}</td>
                 <td>${s.emailUsuario}</td>
-                <td>${s.salida}</td>
-                <td>${s.regreso}</td>
-                <td style="min-width: 400px;">
-                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 5px;">
-                        <button onclick="verDetalles(${s.id})" style="flex-grow: 1;">Detalles</button>
-                        <button class="print-button" onclick="imprimirComprobante(${s.id})" style="flex-grow: 1;">Imprimir</button>
+                <td class="fecha">${s.salida}</td>
+                <td class="fecha">${s.regreso}</td>
+                <td>
+                    <div class="action-group" style="margin-bottom: 8px;">
+                        <button class="btn btn-secondary btn-sm" onclick="verDetalles(${s.id})">Detalles</button>
+                        <button class="btn btn-print btn-sm" onclick="imprimirComprobante(${s.id})">Imprimir</button>
                     </div>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <select id="vehiculo_${s.id}" onchange="verificarSeleccionVehiculo(this, '${s.salida}', '${s.regreso}')" style="flex-grow: 4; min-width: 180px;">
-                            <option value="">-- Asignar Vehículo --</option>
-                            ${opcionesVehiculos}
-                        </select>
-                        <button id="btnAprobar_${s.id}" onclick="aprobar(${s.id}, '${s.salida}', '${s.regreso}')" style="flex-grow: 0; min-width: 40px; padding-left: 10px; padding-right: 10px;">✔️</button>
-                        <button class="secondary" onclick="mostrarModalRechazo(${s.id})" style="flex-grow: 0; min-width: 40px; padding-left: 10px; padding-right: 10px;">❌</button>
+                </td>
+                <td>
+                    <select id="vehiculo_${s.id}" onchange="verificarSeleccionVehiculo(this, '${s.salida}', '${s.regreso}')" style="margin-bottom: 8px; min-width: 180px;">
+                        <option value="">-- Asignar Vehículo --</option>
+                        ${opcionesVehiculos}
+                    </select>
+                    <div class="action-group">
+                        <button id="btnAprobar_${s.id}" class="btn btn-success btn-sm" onclick="aprobar(${s.id}, '${s.salida}', '${s.regreso}')">✓ Aprobar</button>
+                        <button class="btn btn-danger btn-sm" onclick="mostrarModalRechazo(${s.id})">✗ Rechazar</button>
                     </div>
-                    <div id="alerta_${s.id}" style="display: none; margin-top: 5px; padding: 5px; background: #ffcdd2; border: 1px solid #f44336; border-radius: 4px; font-size: 12px; color: #c62828;"></div>
+                    <div id="alerta_${s.id}" style="display: none; margin-top: 8px; padding: 10px; background: var(--danger-bg); border: 1px solid var(--danger); border-radius: 6px; font-size: 0.85rem; color: var(--danger);"></div>
                 </td>
             </tr>`;
         }).join('');
     } else {
-        tbody.innerHTML = `<tr><td colspan="5" align="center">No hay solicitudes pendientes.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" align="center" style="padding: 40px; color: var(--gray-500);">No hay solicitudes pendientes</td></tr>`;
     }
 }
 function verificarConflictoMantenimiento(patente, fechaSalida, fechaRegreso) {
@@ -683,43 +1836,85 @@ async function verificarSeleccionVehiculo(selectElement, fechaSalida, fechaRegre
 
     function renderTablaActivas(activas) {
 
-      document.querySelector('#tablaActivas tbody').innerHTML = activas.map(s => `<tr><td>${s.id}</td><td>${s.emailUsuario}</td><td>${s.salida}</td><td>${s.regreso}</td><td>${s.vehiculoAsignado}</td> <td>${s.gestionadoPor || 'N/A'}</td><td style="display:flex; gap: 5px;"><button onclick="finalizar(${s.id})">Finalizar</button><button class="print-button" onclick="imprimirComprobante(${s.id})">Imprimir</button></td></tr>`).join('') || `<tr><td colspan="6" align="center">No hay solicitudes activas.</td></tr>`;
+      document.querySelector('#tablaActivas tbody').innerHTML = activas.map(s => `<tr>
+        <td class="id">#${s.id}</td>
+        <td>${s.emailUsuario}</td>
+        <td class="fecha">${s.salida}</td>
+        <td class="fecha">${s.regreso}</td>
+        <td class="patente">${s.vehiculoAsignado}</td>
+        <td>${s.gestionadoPor || 'N/A'}</td>
+        <td>
+          <div class="action-group">
+            <button class="btn btn-primary btn-sm" onclick="finalizar(${s.id})">Finalizar</button>
+            <button class="btn btn-print btn-sm" onclick="imprimirComprobante(${s.id})">Imprimir</button>
+          </div>
+        </td>
+      </tr>`).join('') || `<tr><td colspan="7" align="center" style="padding: 40px; color: var(--gray-500);">No hay solicitudes activas</td></tr>`;
 
     }
 
     function renderTablaHistorial(historial) {
-/*       document.querySelector('#tablaHistorial tbody').innerHTML = historial.map(s => `<tr><td>${s.id}</td><td>${s.emailUsuario}</td><td>${s.estado}</td><td>${s.vehiculoAsignado || 'N/A'}</td><td>${s.observaciones}</td><td><button class="print-button" onclick="imprimirComprobante(${s.id})">Imprimir</button></td></tr>`).join('') || `<tr><td colspan="6" align="center">No hay historial de solicitudes.</td></tr>`; */
-    document.querySelector('#tablaHistorial tbody').innerHTML = historial.map(s => `<tr><td>${s.id}</td><td>${s.emailUsuario}</td><td>${s.estado}</td><td>${s.gestionadoPor || 'N/A'}</td><td>${s.vehiculoAsignado || 'N/A'}</td><td>${s.observaciones}</td><td><button class="print-button" onclick="imprimirComprobante(${s.id})">Imprimir</button></td></tr>`).join('') || `<tr><td colspan="7" align="center">No hay historial de solicitudes.</td></tr>`;
+    document.querySelector('#tablaHistorial tbody').innerHTML = historial.map(s => {
+        const estado = (s.estado || '').toLowerCase();
+        const statusClass = estado === 'finalizada' ? 'finalizada' : estado === 'rechazada' ? 'rechazada' : '';
+        return `<tr>
+        <td class="id">#${s.id}</td>
+        <td>${s.emailUsuario}</td>
+        <td><span class="status ${statusClass}">${s.estado}</span></td>
+        <td>${s.gestionadoPor || 'N/A'}</td>
+        <td class="patente">${s.vehiculoAsignado || 'N/A'}</td>
+        <td>${s.observaciones || '-'}</td>
+        <td><div class="action-group"><button class="btn btn-print btn-sm" onclick="imprimirComprobante(${s.id})">Imprimir</button></div></td>
+      </tr>`;
+    }).join('') || `<tr><td colspan="7" align="center" style="padding: 40px; color: var(--gray-500);">No hay historial de solicitudes</td></tr>`;
     }
     
     function renderTablaVehiculos(vehiculos) {
       document.querySelector('#tablaVehiculos tbody').innerHTML = vehiculos.map(v => {
           let estadoHtml;
           const estadoActual = (v.estado || '').toLowerCase();
+          let statusClass = estadoActual === 'disponible' ? 'disponible' : estadoActual === 'asignado' ? 'asignado' : estadoActual === 'mantenimiento' ? 'mantenimiento' : '';
+          
           if (estadoActual === 'asignado' || estadoActual === 'mantenimiento') {
-              estadoHtml = `<span style="font-weight: bold;">${v.estado}</span>`;
+              estadoHtml = `<span class="status ${statusClass}">${v.estado}</span>`;
           } else {
               const opciones = ['Disponible', 'No disponible', 'Fuera de servicio'];
               const opcionesHtml = opciones.map(opt => `<option value="${opt.toLowerCase()}" ${opt.toLowerCase() === estadoActual ? 'selected' : ''}>${opt}</option>`).join('');
-              estadoHtml = `<select onchange="cambiarEstadoVehiculo(this, '${v.patente}')">${opcionesHtml}</select>`;
+              estadoHtml = `<select onchange="cambiarEstadoVehiculo(this, '${v.patente}')" style="min-width: 140px;">${opcionesHtml}</select>`;
           }
           return `<tr>
-                  <td>${v.id}</td>
-                  <td>${v.patente}</td>
+                  <td class="id">#${v.id}</td>
+                  <td class="patente">${v.patente}</td>
                   <td>${v.marca} ${v.modelo}</td>
                   <td>${estadoHtml}</td>
-                  <td>${v.fechaVtoRto}</td>
-                  <td>${v.fechaVtoSeguro}</td>
-                  <td><button onclick='abrirParaEditar(${JSON.stringify(v)})'>Editar</button></td>
+                  <td class="fecha">${v.fechaVtoRto}</td>
+                  <td class="fecha">${v.fechaVtoSeguro}</td>
+                  <td><div class="action-group"><button class="btn btn-secondary btn-sm" onclick='abrirParaEditar(${JSON.stringify(v)})'>Editar</button></div></td>
                 </tr>`
-      }).join('') || `<tr><td colspan="7" align="center">No hay vehículos registrados.</td></tr>`;
+      }).join('') || `<tr><td colspan="7" align="center" style="padding: 40px; color: var(--gray-500);">No hay vehículos registrados</td></tr>`;
     }
     
     function renderTablaMantenimiento(mantenimientos, historialMantenimientos, vehiculos) {
         const selectMantenimiento = document.querySelector('#formRegistrarMantenimiento select[name="patente"]');
         selectMantenimiento.innerHTML = '<option value="">-- Seleccionar Vehículo --</option>' + vehiculos.map(v => `<option value="${v.patente}">${v.patente} - ${v.marca} ${v.modelo}</option>`).join('');
-        document.querySelector('#tablaMantenimientos tbody').innerHTML = mantenimientos.map(m => `<tr><td>${m.id}</td><td>${m.patente}</td><td>${m.tipo}</td><td>${m.detalle}</td><td>${m.fechaInicio}</td><td>${m.responsable}</td><td><button onclick="finalizarMant(${m.id})">Finalizar</button></td></tr>`).join('') || `<tr><td colspan="7" align="center">No hay mantenimientos en curso.</td></tr>`;
-        document.querySelector('#tablaMantenimientosHistorial tbody').innerHTML = historialMantenimientos.map(m => `<tr><td>${m.id}</td><td>${m.patente}</td><td>${m.tipo}</td><td>${m.fechaInicio}</td><td>${m.fechaFin}</td><td>${m.responsable}</td><td>${m.costo}</td></tr>`).join('') || `<tr><td colspan="7" align="center">No hay mantenimientos finalizados.</td></tr>`;
+        document.querySelector('#tablaMantenimientos tbody').innerHTML = mantenimientos.map(m => `<tr>
+          <td class="id">#${m.id}</td>
+          <td class="patente">${m.patente}</td>
+          <td>${m.tipo}</td>
+          <td>${m.detalle}</td>
+          <td class="fecha">${m.fechaInicio}</td>
+          <td>${m.responsable}</td>
+          <td><div class="action-group"><button class="btn btn-success btn-sm" onclick="finalizarMant(${m.id})">✓ Finalizar</button></div></td>
+        </tr>`).join('') || `<tr><td colspan="7" align="center" style="padding: 40px; color: var(--gray-500);">No hay mantenimientos en curso</td></tr>`;
+        document.querySelector('#tablaMantenimientosHistorial tbody').innerHTML = historialMantenimientos.map(m => `<tr>
+          <td class="id">#${m.id}</td>
+          <td class="patente">${m.patente}</td>
+          <td>${m.tipo}</td>
+          <td class="fecha">${m.fechaInicio}</td>
+          <td class="fecha">${m.fechaFin}</td>
+          <td>${m.responsable}</td>
+          <td class="mono">$${m.costo}</td>
+        </tr>`).join('') || `<tr><td colspan="7" align="center" style="padding: 40px; color: var(--gray-500);">No hay mantenimientos finalizados</td></tr>`;
     }
 
     // --- ACCIONES Y MANEJO DE EVENTOS ---
@@ -735,12 +1930,65 @@ async function verificarSeleccionVehiculo(selectElement, fechaSalida, fechaRegre
 
 
 async function aprobar(id, salida, regreso) {
-    // Reemplaza 'confirm' con un modal de confirmación personalizado.
-    // Ej: const confirmacion = await mostrarConfirmacion('...');
-    // Se utiliza 'confirm' por simplicidad, pero no debe usarse en entornos de producción.
-    if (!confirm('¿Confirmas la aprobación de esta solicitud?')) {
+    // Obtener el vehículo seleccionado.
+    const selectVehiculo = document.getElementById(`vehiculo_${id}`);
+    const patente = selectVehiculo.value;
+
+    if (!patente) {
+        mostrarMensaje('Atención', 'Debes seleccionar un vehículo antes de aprobar la solicitud.');
         return;
     }
+
+    // Preguntar si quiere completar control o aprobar directo
+    const hacerControl = confirm('¿Deseas completar el control de entrega ahora?\n\nAceptar = Completar control\nCancelar = Aprobar sin control');
+    
+    if (hacerControl) {
+        // Abrir modal de control inicial
+        await abrirControlInicialConPatente(id, patente, salida, regreso);
+    } else {
+        // Aprobar sin control
+        if (!confirm('¿Confirmas la aprobación de esta solicitud SIN completar el control?')) {
+            return;
+        }
+        await aprobarSinControlCompleto(id, patente, salida, regreso);
+    }
+}
+
+async function aprobarSinControlCompleto(id, patente, salida, regreso) {
+    mostrarLoader();
+    try {
+        const response = await run('aprobarSolicitud', id, patente, salida, regreso);
+        mostrarMensaje('Éxito', response.message);
+        await cargarTodasLasTablas();
+    } catch (err) {
+        let mensajeError = err.message;
+        if (mensajeError.includes('mantenimiento') || mensajeError.includes('conflicto')) {
+            mensajeError = `❌ Conflicto de Mantenimiento\n\n${mensajeError}\n\nSugerencias:\n• Selecciona otro vehículo`;
+        } else if (mensajeError.includes('Conflicto de fechas')) {
+            mensajeError = `❌ Conflicto de Asignación\n\n${mensajeError}`;
+        }
+        mostrarMensaje('Error al Aprobar Solicitud', mensajeError);
+    } finally {
+        ocultarLoader();
+    }
+}
+
+// Abrir control inicial guardando datos para el callback
+let pendingAprobarData = null;
+
+async function abrirControlInicialConPatente(id, patente, salida, regreso) {
+    pendingAprobarData = { id, patente, salida, regreso };
+    await abrirControlInicial(id, patente);
+}
+
+async function abrirControlFinalConId(id) {
+    pendingFinalizarData = { id };
+    const solicitud = solicitudesCacheadas.find(s => s.id == id);
+    const patente = solicitud?.vehiculoAsignado?.split(' - ')[0] || '';
+    await abrirControlFinal(id, patente);
+}
+
+async function aprobarDirectoLegacy(id, salida, regreso) {
     
     // Obtener el vehículo seleccionado.
     const selectVehiculo = document.getElementById(`vehiculo_${id}`);
@@ -782,8 +2030,23 @@ async function verificarDisponibilidadVehiculo(patente, fechaSalida, fechaRegres
 }
 
 
+    let pendingFinalizarData = null;
+    
     async function finalizar(id) {
-        if (!confirm('¿Seguro que deseas marcar esta solicitud como finalizada? El vehículo volverá a estar disponible.')) return;
+        // Preguntar si quiere completar control o finalizar directo
+        const hacerControl = confirm('¿Deseas completar el control de devolución ahora?\n\nAceptar = Completar control\nCancelar = Finalizar sin control');
+        
+        if (hacerControl) {
+            // Abrir modal de control final
+            await abrirControlFinalConId(id);
+        } else {
+            // Finalizar sin control
+            if (!confirm('¿Confirmas la finalización SIN completar el control?')) return;
+            await finalizarSinControlCompleto(id);
+        }
+    }
+    
+    async function finalizarSinControlCompleto(id) {
         mostrarLoader();
         try {
             const response = await run('finalizarSolicitud', id);
@@ -937,11 +2200,211 @@ async function verificarDisponibilidadVehiculo(patente, fechaSalida, fechaRegres
 
     /* window.addEventListener('load', cargarTodasLasTablas); */
        // Carga los datos cuando la página se abre por primera vez
-    window.addEventListener('load', cargarTodasLasTablas(false));
+    window.addEventListener('load', function() {
+      configurarMenuMobile();
+      cargarTodasLasTablas(false);
+    });
+    window.addEventListener('resize', syncMobileSidebarState);
+
+    
+    // --- CONTROL VEHICULAR ---
+    let checklistData = null;
+    
+    // Abrir modal de control inicial (al aprobar)
+    async function abrirControlInicial(idSolicitud, patente) {
+        checklistData = { items: [] };
+        document.getElementById('controlIdSolicitud').value = idSolicitud;
+        document.getElementById('controlTipo').value = 'inicial';
+        document.getElementById('controlPatente').value = patente;
+        document.getElementById('modalControlTitulo').textContent = 'Control de Entrega';
+        document.getElementById('modalControlSubtitulo').textContent = 'Completar al entregar el vehículo - Solicitud #' + idSolicitud;
+        mostrarLoader();
+        try {
+            const checklist = await run('obtenerChecklistEstandar');
+            renderizarChecklist(checklist);
+            mostrarModal('modalControl');
+        } catch(err) {
+            mostrarMensaje('Error', 'No se pudo cargar el checklist: ' + err.message);
+        } finally {
+            ocultarLoader();
+        }
+    }
+    
+    // Abrir modal de control final (al finalizar)
+    async function abrirControlFinal(idSolicitud, patente) {
+        checklistData = { items: [] };
+        document.getElementById('controlIdSolicitud').value = idSolicitud;
+        document.getElementById('controlTipo').value = 'final';
+        document.getElementById('controlPatente').value = patente;
+        document.getElementById('modalControlTitulo').textContent = 'Control de Devolución';
+        document.getElementById('modalControlSubtitulo').textContent = 'Completar al devolver el vehículo - Solicitud #' + idSolicitud;
+        mostrarLoader();
+        try {
+            const checklist = await run('obtenerChecklistEstandar');
+            renderizarChecklist(checklist);
+            mostrarModal('modalControl');
+        } catch(err) {
+            mostrarMensaje('Error', 'No se pudo cargar el checklist: ' + err.message);
+        } finally {
+            ocultarLoader();
+        }
+    }
+    
+    // Renderizar checklist por secciones
+    function renderizarChecklist(checklist) {
+        const container = document.getElementById('checklistSecciones');
+        let html = '';
+        
+        for (const [seccionKey, seccion] of Object.entries(checklist)) {
+            html += `<div class="form-section" style="margin-bottom: 15px;">
+                <details open>
+                    <summary style="font-weight:600;cursor:pointer;padding:10px;background:#f8f9fa;border-radius:4px;">${seccion.label}</summary>
+                    <div style="padding: 10px;">`;
+            
+            for (const item of seccion.items) {
+                const itemId = seccionKey + '_' + item.key;
+                const opciones = item.opciones ? item.opciones.map(opt => 
+                    `<option value="${opt}">${opt}</option>`
+                ).join('') : '';
+                
+                if (opciones) {
+                    // Select para nivel de combustible
+                    html += `<div style="margin: 8px 0;">
+                        <label>${item.nombre}: 
+                            <select id="${itemId}" name="${item.key}" data-seccion="${seccion.label}" style="width:auto;">
+                                <option value="">-- Seleccionar --</option>
+                                ${opciones}
+                            </select>
+                        </label>
+                    </div>`;
+                } else {
+                    // Checkboxes para items simples
+                    html += `<div class="checklist-item">
+                        <label>${item.nombre}</label>
+                        <label class="checklist-option"><input type="radio" name="${itemId}" value="OK"> OK</label>
+                        <label class="checklist-option"><input type="radio" name="${itemId}" value="Falta"> Falta</label>
+                        <label class="checklist-option"><input type="radio" name="${itemId}" value="N/A" checked> N/A</label>
+                    </div>`;
+                }
+            }
+            
+            html += `</div></details></div>`;
+        }
+        
+        container.innerHTML = html;
+    }
+    
+    // Guardar control vehicular
+    async function guardarControlVehicular(event) {
+        event.preventDefault();
+        
+        const idSolicitud = document.getElementById('controlIdSolicitud').value;
+        const tipo = document.getElementById('controlTipo').value;
+        const kilometros = document.getElementById('controlKm').value;
+        const observaciones = document.getElementById('controlObservaciones').value;
+        
+        // Recopilar items del checklist
+        const items = [];
+        const container = document.getElementById('checklistSecciones');
+        
+        // items con radio buttons
+        container.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+            const name = input.name;
+            const seccion = input.closest('.form-section').querySelector('summary').textContent;
+            const key = name.substring(name.indexOf('_') + 1);
+            items.push({ seccion: seccion, item: key, valor: input.value });
+        });
+        
+        // items con select
+        container.querySelectorAll('select').forEach(select => {
+            if (select.value) {
+                const seccion = select.dataset.seccion;
+                const key = select.name;
+                items.push({ seccion: seccion, item: key, valor: select.value });
+            }
+        });
+        
+        const controlData = {
+            idSolicitud: parseInt(idSolicitud),
+            tipo: tipo,
+            kilometros: kilometros,
+            observaciones: observaciones,
+            items: items
+        };
+        
+        ocultarModal('modalControl');
+        mostrarLoader();
+        
+        try {
+            if (tipo === 'inicial') {
+                // Usar datos guardados al abrir el modal
+                const patente = pendingAprobarData?.patente || document.getElementById('vehiculo_' + idSolicitud)?.value || '';
+                const salida = pendingAprobarData?.salida || '';
+                const regreso = pendingAprobarData?.regreso || '';
+                await run('aprobarSolicitud', idSolicitud, patente, salida, regreso, controlData);
+            } else {
+                // Primero guardar control, luego finalizar
+                await run('finalizarSolicitud', parseInt(idSolicitud), controlData);
+            }
+            mostrarMensaje('Éxito', `Control ${tipo} guardado correctamente.`);
+            pendingAprobarData = null;
+            pendingFinalizarData = null;
+            await cargarTodasLasTablas();
+        } catch(err) {
+            mostrarMensaje('Error', err.message);
+        } finally {
+            ocultarLoader();
+        }
+    }
+    
+    // Omitir control (con warn)
+    function omitirControl(tipoAccion, idSolicitud) {
+        const mensaje = tipoAccion === 'inicial' 
+            ? '¿Continuar SIN completar el control de entrega?' 
+            : '¿Continuar SIN completar el control de devolución?';
+        
+        if (confirm(mensaje)) {
+            if (tipoAccion === 'inicial') {
+                aprobarSinControl(idSolicitud);
+            } else {
+                finalizarSinControl(idSolicitud);
+            }
+        }
+    }
+    
+    async function aprobarSinControl(idSolicitud) {
+        mostrarLoader();
+        try {
+            const patente = pendingAprobarData?.patente || document.getElementById('vehiculo_' + idSolicitud)?.value || '';
+            const salida = pendingAprobarData?.salida || '';
+            const regreso = pendingAprobarData?.regreso || '';
+            await run('aprobarSolicitud', idSolicitud, patente, salida, regreso);
+            pendingAprobarData = null;
+            mostrarMensaje('Éxito', 'Solicitud aprobada.');
+            await cargarTodasLasTablas();
+        } catch(err) {
+            mostrarMensaje('Error', err.message);
+        } finally {
+            ocultarLoader();
+        }
+    }
+    
+    async function finalizarSinControl(idSolicitud) {
+        mostrarLoader();
+        try {
+            await run('finalizarSolicitud', parseInt(idSolicitud), null);
+            mostrarMensaje('Éxito', 'Solicitud finalizada.');
+            await cargarTodasLasTablas();
+        } catch(err) {
+            mostrarMensaje('Error', err.message);
+        } finally {
+            ocultarLoader();
+        }
+    }
 
     
     // Recarga los datos automáticamente cada 5 minutos (300,000 milisegundos)
-    setInterval(() => cargarTodasLasTablas(true), 300000); 
+    setInterval(function() { cargarTodasLasTablas(true); }, 300000); 
   </script>
 </body>
 </html>
